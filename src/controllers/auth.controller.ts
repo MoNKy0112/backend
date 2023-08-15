@@ -1,6 +1,7 @@
 import {Request,Response} from 'express'
-import nodemailer from 'nodemailer'
+import { sendMail } from '../utilities/sendmail';
 import User,{IUser} from '../models/User';
+import bcrypt from 'bcryptjs'
 
 import jwt from 'jsonwebtoken';
 
@@ -43,7 +44,7 @@ export const profile = async (req: Request, res: Response) => {
     res.json(user);
 };
 
-export const resetPassword = async (req: Request, res: Response) => {
+export const requestPasswordReset = async (req: Request, res: Response) => {
     const user = await User.findOne({email:req.body.email});
     if(!user) return res.status(400).json("Email is wrong");
 
@@ -52,47 +53,27 @@ export const resetPassword = async (req: Request, res: Response) => {
         expiresIn:60*5
     })
 
-     
-    const verificationLink=`http//localhost:${process.env.PORT||"3000"}/resetpassword/${token}`
+    const verificationLink=`http//localhost:${process.env.PORT||"3000"}/resetpassword/token=${token}`
     //data mail y enviarlo
-    const transporter = nodemailer.createTransport({
-        service:'gmail',
-        auth:{
-            user:`${process.env.EMAIL_ADDRESS}`,
-            pass:`${process.env.EMAIL_PASSWORD}`
-        }
-    });
-    const mailOptions = {
-        from:'test@gmail.com',
-        to:`${user.email}`,
-        subject:'Reset Password',
-        text:verificationLink
-    };
+    
+    sendMail(req.body.email,{verificationLink});
 
-    try {
-        transporter.sendMail(mailOptions)
-    } catch (error) {
-        console.error("Ha ocurrido un error");
-    }
-
-    res.status(200).json('Email enviado')
-    await user.updateOne({tokenReset:token})
-    console.log(user)
+    // res.status(200).json('Email enviado')
+    res.status(200).json(token)
+    console.log(token)
 }
 
-export const changePassword = async (req: Request, res: Response) => {
-    // const user = await User.findByIdAndUpdate(req.userId,{});
-    const user = await User.findOne({email:req.body.email});
-    console.log(user)
-
-    if(!user)return res.status(404).json("User not found!");
+export const passwordReset = async (req: Request, res: Response) => {
     
-    await user.updateOne({
-        password:await user.encryptPassword(req.body.newpassword),
-        tokenReset:null
-    })
+    const secPassword=await bcrypt.hash(req.body.newpassword,await bcrypt.genSalt(10))
+
+    await User.updateOne(
+    {_id:req.userId},
+    {$set:{password:secPassword}},
+    {new: true});
+
+    const user = await User.findById(req.userId);
     console.log(user)
-    await user.save();
     res.status(200).json(user)
     
 }

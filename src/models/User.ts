@@ -1,11 +1,11 @@
 import {Schema, model,Document} from 'mongoose'
 import bcrypt from 'bcryptjs'
+import {NextFunction} from 'express'
 
 export interface IUser extends Document{
     username:string;
     email:string;
     password:string;
-    tokenReset:String;
     encryptPassword(password:string):Promise<string>;
     validatePassword(password:string):Promise<boolean>;
 }
@@ -26,16 +26,13 @@ const userSchema = new Schema({
     password:{
         type:String,
         required:true
-    },
-    tokenReset:{
-        type:String,
-        required:false,
     }
 });
 
 userSchema.methods.encryptPassword = async (password:string): Promise<string> =>{
     const salt = await bcrypt.genSalt(10);
     return bcrypt.hash(password,salt);
+    
 };
 
 userSchema.methods.validatePassword = async function (password:string): Promise<boolean> {

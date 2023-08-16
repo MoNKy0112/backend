@@ -4,14 +4,14 @@
 
 ## Tecnologías Utilizadas
 
-- Node.js
-- Express
-- MongoDB
-- TypeScript
+- [Node.js](https://nodejs.org/es/docs/)
+- [Express](https://expressjs.com/es/)
+- [MongoDB](https://docs.mongodb.com/manual/)
+- [TypeScript](https://www.typescriptlang.org/docs/)
 
 ## Descripción
 
-Este repositorio contiene el código fuente para el Back-End de la aplicación web de Tienda Universitaria. Utilizamos Node.js como entorno de ejecución, Express como framework para crear APIs, y MongoDB como base de datos. TypeScript se utiliza para agregar tipado estático y mejorar la calidad del código.
+Este repositorio contiene el código fuente para el Back-End de la aplicación web de Tienda Universitaria. Utilizamos Node.js como entorno de ejecución, Express como framework para crear APIs, MongoDB como base de datos y TypeScript para tipado estático que mejora la calidad del código.
 
 ## Instrucciones de Desarrollo
 
@@ -22,8 +22,8 @@ Este repositorio contiene el código fuente para el Back-End de la aplicación w
 
 ## Licencia
 
-Este proyecto está bajo la Licencia [MIT](LICENSE).
+Este proyecto está bajo la [Licencia MIT](LICENSE).
 
 ---
 
-© TiUN | Equipo de Desarrollo de Back-End
+© Tienda Universitaria (TiUN) | Equipo de Desarrollo de Back-End

@@ -4,30 +4,20 @@ module.exports = {
 		es2021: true,
 		node: true,
 	},
-	extends: [
-		'xo',
-		'plugin:react/recommended',
-	],
+	extends: ['xo', 'plugin:react/recommended'],
 	overrides: [
 		{
 			env: {
 				node: true,
 			},
-			files: [
-				'.eslintrc.{js,cjs}',
-			],
+			files: ['.eslintrc.{js,cjs}'],
 			parserOptions: {
 				sourceType: 'script',
 			},
 		},
 		{
-			extends: [
-				'xo-typescript',
-			],
-			files: [
-				'*.ts',
-				'*.tsx',
-			],
+			extends: ['xo-typescript'],
+			files: ['*.ts', '*.tsx'],
 		},
 	],
 	parserOptions: {
@@ -35,9 +25,7 @@ module.exports = {
 		sourceType: 'module',
 		project: './tsconfig.json',
 	},
-	plugins: [
-		'react',
-	],
+	plugins: ['react'],
 	rules: {
 		indent: ['error', 'tab'], // Indentación con tabulador
 		'@typescript-eslint/no-unused-vars': 'warn', // 'error' for production
@@ -67,5 +55,6 @@ module.exports = {
 		'no-mixed-spaces-and-tabs': 'error', // Evitar mezclar espacios y tabuladores
 		'no-new-object': 'error', // Evitar usar new Object()
 		'no-new-wrappers': 'error', // Evitar usar new String(), new Boolean(), etc.
+		'@typescript-eslint/naming-convention': 'off',
 	},
 };

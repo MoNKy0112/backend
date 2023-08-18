@@ -1,33 +1,34 @@
-import {Request, Response, NextFunction} from 'express'
-import jwt from 'jsonwebtoken'
+import {type Request, type Response, type NextFunction} from 'express';
+import jwt from 'jsonwebtoken';
 
-interface IPayload{
-    _id:string;
-    iat:number;
-    exp:number;
+type IPayload = {
+	_id: string;
+	iat: number;
+	exp: number;
 
-}
+};
 
-export const tokenValidation = (req:Request, res:Response, next:NextFunction) =>{
-    const token = req.header('auth-token');
+export const tokenValidation = (req: Request, res: Response, next: NextFunction) => {
+	const token = req.cookies.authToken as string;
 
-    if(!token) return res.status(401).json("Acceso denegado");
+	console.log(token);
+	if (!token) return res.status(401).json('Acceso denegado');
 
-    const payload = jwt.verify(token, process.env.TOKEN_SECRET || 'tokentest') as IPayload;
+	const payload = jwt.verify(token, process.env.TOKEN_SECRET ?? 'tokentest') as IPayload;
 
-    req.userId = payload._id;
-    
-    next();
-}
+	req.userId = payload._id;
 
-export const tokenResetValidation = (req:Request, res:Response, next:NextFunction) =>{
-    const token = req.header('reset-token');
+	next();
+};
 
-    if(!token) return res.status(401).json("Acceso denegado");
+export const tokenResetValidation = (req: Request, res: Response, next: NextFunction) => {
+	const token = req.header('reset-token');
 
-    const payload = jwt.verify(token, process.env.TOKEN_SECRET_RESET || 'resettokentest') as IPayload;
+	if (!token) return res.status(401).json('Acceso denegado');
 
-    req.userId = payload._id;
-    
-    next();
-}
+	const payload = jwt.verify(token, process.env.TOKEN_SECRET_RESET ?? 'resettokentest') as IPayload;
+
+	req.userId = payload._id;
+
+	next();
+};

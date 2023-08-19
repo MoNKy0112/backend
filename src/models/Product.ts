@@ -1,6 +1,6 @@
 import {Schema, model, type Document} from 'mongoose';
 
-type IProduct = {
+export type IProduct = {
 	name: string;
 	description: string;
 	price: number;

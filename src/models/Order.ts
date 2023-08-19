@@ -1,6 +1,6 @@
 import {Schema, model, type Document} from 'mongoose';
 
-type IOrder = {
+export type IOrder = {
 	userId: string;
 	products: Array<{
 		productId: string;

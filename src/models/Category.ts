@@ -1,6 +1,6 @@
 import {Schema, model, type Document} from 'mongoose';
 
-type ICategory = {
+export type ICategory = {
 	name: string;
 	description: string;
 } & Document;

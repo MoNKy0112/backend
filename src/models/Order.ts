@@ -1,9 +1,9 @@
 import {Schema, model, type Document} from 'mongoose';
 
 export type IOrder = {
-	userId: string;
+	userId: Schema.Types.ObjectId;
 	products: Array<{
-		productId: string;
+		productId: Schema.Types.ObjectId;
 		quantity: number;
 		subtotal: number;
 	}>;

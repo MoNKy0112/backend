@@ -1,15 +1,21 @@
 import {Schema, model, type Document} from 'mongoose';
 
 export type IProduct = {
+	sellerId: Schema.Types.ObjectId;
 	name: string;
 	description: string;
 	price: number;
 	imageUrl: string;
-	categories: string[];
+	categories: Schema.Types.ObjectId[];
 	stock: number;
 } & Document;
 
 const productSchema = new Schema({
+	sellerId: {
+		type: Schema.Types.ObjectId,
+		ref: 'User',
+		required: true,
+	},
 	name: {
 		type: String,
 		required: true,

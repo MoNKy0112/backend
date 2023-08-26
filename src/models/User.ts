@@ -40,9 +40,15 @@ const userSchema = new Schema({
 	}],
 	cart: [
 		{
-			productId: {type: Schema.Types.ObjectId, ref: 'Product', required: true},
-			quantity: {type: Number, required: true},
-			subtotal: {type: Number, required: true},
+			sellerId: Schema.Types.ObjectId,
+			ref: 'User',
+			products: [
+				{
+					productId: {type: Schema.Types.ObjectId, ref: 'Product', required: true},
+					quantity: {type: Number, required: true},
+					subtotal: {type: Number, required: true},
+				},
+			],
 		},
 	],
 });

@@ -13,6 +13,11 @@ class OrderFacade {
 		return order;
 	}
 
+	async getOrdersByBuyer(userId: ObjectId) {
+		const orders = await Order.find({userId});
+		return orders;
+	}
+
 	public async updateOrder(orderId: ObjectId, newData: Document) {
 		const order = Order.findByIdAndUpdate(orderId, newData, {new: true});
 		return order;

@@ -2,6 +2,7 @@ import {Schema, model, type Document} from 'mongoose';
 
 export type IOrder = {
 	userId: Schema.Types.ObjectId;
+	sellerId: Schema.Types.ObjectId;
 	products: Array<{
 		productId: Schema.Types.ObjectId;
 		quantity: number;
@@ -13,6 +14,11 @@ export type IOrder = {
 
 const orderSchema = new Schema({
 	userId: {
+		type: Schema.Types.ObjectId,
+		ref: 'User',
+		required: true,
+	},
+	sellerId: {
 		type: Schema.Types.ObjectId,
 		ref: 'User',
 		required: true,

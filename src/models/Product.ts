@@ -8,6 +8,7 @@ export type IProduct = {
 	imageUrl: string;
 	categories: Schema.Types.ObjectId[];
 	stock: number;
+	discount: number;
 } & Document;
 
 const productSchema = new Schema({

@@ -40,8 +40,10 @@ const userSchema = new Schema({
 	}],
 	cart: [
 		{
-			sellerId: Schema.Types.ObjectId,
-			ref: 'User',
+			sellerId: {
+				type: Schema.Types.ObjectId,
+				ref: 'User',
+			},
 			products: [
 				{
 					productId: {type: Schema.Types.ObjectId, ref: 'Product', required: true},

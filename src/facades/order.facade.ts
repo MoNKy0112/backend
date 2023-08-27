@@ -17,10 +17,8 @@ class OrderFacade {
 			});
 			try {
 				const savedOrder = await order.save();
-				console.log(savedOrder);
 				return savedOrder;
 			} catch (error) {
-				console.log(error);
 				throw new Error();
 			}
 		} catch (error) {

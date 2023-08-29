@@ -25,28 +25,36 @@ export const signUp = async (req: Request, res: Response) => {
 };
 
 export const signIn = async (req: Request, res: Response) => {
-	const user = await User.findOne({email: req.body.email as string});
-	// Console.log(user)
-	if (!user) return res.status(400).json('Email is wrong');
+	try {
+		const user = await User.findOne({ email: req.body.email as string });
 
-	const correctPassword: boolean = await user.validatePassword(
-		req.body.password as string,
-	);
-	if (!correctPassword) return res.status(400).json('Password is wrong');
+		if (!user) {
+			throw new Error('Email is wrong'); // Lanzar una excepción en lugar de devolver un mensaje directamente
+		}
 
-	const key = (process.env.TOKEN_SECRET ?? 'tokentest');
+		const correctPassword: boolean = await user.validatePassword(req.body.password as string);
+		if (!correctPassword) {
+			throw new Error('Password is wrong'); // Lanzar una excepción en lugar de devolver un mensaje directamente
+		}
 
-	const accesToken: string = jwt.sign({_id: user._id as ObjectId}, key, {
-		expiresIn: 60 * 15,
-	});
-	const refreshToken: string = jwt.sign({_id: user._id as ObjectId}, key, {
-		expiresIn: 60 * 60 * 24 * 7,
-	});
-	// Res.header('auth-token',token).json(token);
-	res.cookie('authToken', accesToken, {httpOnly: true, secure: true, sameSite: 'strict'});
-	res.cookie('refreshToken', refreshToken, {httpOnly: true, secure: true, sameSite: 'strict'});
-	res.json({user, accesToken, refreshToken});
+		const key = process.env.TOKEN_SECRET ?? 'tokentest';
+
+		const accessToken: string = jwt.sign({ _id: user._id as ObjectId }, key, {
+			expiresIn: 60 * 15,
+		});
+		const refreshToken: string = jwt.sign({ _id: user._id as ObjectId }, key, {
+			expiresIn: 60 * 60 * 24 * 7,
+		});
+
+		res.cookie('authToken', accessToken, { httpOnly: true, secure: true, sameSite: 'strict' });
+		res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true, sameSite: 'strict' });
+		res.json({ user, accessToken, refreshToken });
+	} catch (error) {
+		console.error('Error during login:', error.message);
+		res.status(400).json(error.message); // Devolver el mensaje de error en la respuesta
+	}
 };
+
 
 export const profile = async (req: Request, res: Response) => {
 	const user = await User.findById(req.userId);

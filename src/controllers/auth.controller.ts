@@ -50,8 +50,13 @@ export const signIn = async (req: Request, res: Response) => {
 		res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true, sameSite: 'strict' });
 		res.json({ user, accessToken, refreshToken });
 	} catch (error) {
-		console.error('Error during login:', error.message);
-		res.status(400).json(error.message); // Devolver el mensaje de error en la respuesta
+		if (error instanceof Error) {
+			console.error('Error during login:', error.message);
+			res.status(400).json(error.message);
+		} else {
+			console.error('Unknown error during login:', error);
+			res.status(500).json('An unknown error occurred.');
+		}
 	}
 };
 

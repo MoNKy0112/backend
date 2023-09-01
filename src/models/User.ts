@@ -2,19 +2,38 @@ import {Schema, model, type Document} from 'mongoose';
 import bcrypt from 'bcryptjs';
 
 export type IUser = {
-	username: string;
+	name: string;
+	lastname: string;
 	email: string;
 	password: string;
+	id_cedula: string;
+	phoneNumber: string;
 	encryptPassword(password: string): Promise<string>;
 	validatePassword(password: string): Promise<boolean>;
 } & Document;
 
 const userSchema = new Schema({
-	username: {
+	name: {
 		type: String,
 		required: true,
 		min: 4,
 		lowercase: true,
+	},
+	lastname: {
+		type: String,
+		required: true,
+		min: 4,
+		lowercase: true,
+	},
+	id_cedula: {
+		type: String,
+		required: true,
+		min: 4,
+		lowercase: true,
+	},
+	phoneNumber: {
+		type: String,
+		required: true,
 	},
 	email: {
 		type: String,

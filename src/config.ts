@@ -3,8 +3,8 @@ dotenv.config();
 
 export default {
 	MONGO_DATABASE: 'test2',
-	MONGO_USER: 'admin',
-	MONGO_PASSWORD: 'admin',
+	MONGO_USER: 'seortizg',
+	MONGO_PASSWORD: 'Cuatrobrazoz509',
 	MONGO_HOST: '127.0.0.1:27017',
 	SERVER_PORT: process.env.PORT ?? 3000,
 };

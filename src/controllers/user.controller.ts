@@ -27,6 +27,9 @@ export const createUser = async (req: Request, res: Response) => {
 export const getUserById = async (req: Request, res: Response) => {
   try {
     const user = await User.findOne({ id_cedula: req.params.cedula });
+    if (!user) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
     res.json(user);
   } catch (error) {
     res.status(500).json({ error: 'Error al obtener el usuario' });

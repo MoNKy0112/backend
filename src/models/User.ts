@@ -28,6 +28,7 @@ const userSchema = new Schema({
 	id_cedula: {
 		type: String,
 		required: true,
+		unique: true,
 		min: 4,
 		lowercase: true,
 	},

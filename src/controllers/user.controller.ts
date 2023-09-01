@@ -26,7 +26,7 @@ export const createUser = async (req: Request, res: Response) => {
 
 export const getUserById = async (req: Request, res: Response) => {
   try {
-    const user = await User.findById(req.params.userId);
+    const user = await User.findOne({ id_cedula: req.params.cedula });
     res.json(user);
   } catch (error) {
     res.status(500).json({ error: 'Error al obtener el usuario' });
@@ -49,7 +49,11 @@ export const updateUser = async (req: Request, res: Response) => {
 
 export const deleteUser = async (req: Request, res: Response) => {
   try {
-    await User.findByIdAndDelete(req.params.userId);
+    const cedulaToDelete = req.params.cedula;
+    const deletedUser = await User.findOneAndDelete({ id_cedula: cedulaToDelete });
+    if (!deletedUser) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
     res.json({ message: 'Usuario eliminado exitosamente' });
   } catch (error) {
     res.status(500).json({ error: 'Error al eliminar el usuario' });

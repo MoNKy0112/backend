@@ -1,9 +1,10 @@
 import {Router} from 'express';
-import {createNewOrder, getOrderById} from '../controllers/order.controller';
+import {createNewOrder, getOrderById, getOrders} from '../controllers/order.controller';
 import {verifyCartProducts} from '../middlewares/verifyCartProducts';
 
 const router: Router = Router();
 
-router.get('/:orderId', getOrderById);
+// Router.get('/:orderId', getOrderById);
+router.get('/getorder', getOrders);
 router.post('/createorder', verifyCartProducts, createNewOrder);
 export default router;

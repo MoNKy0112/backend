@@ -8,6 +8,8 @@ export type IUser = {
 	password: string;
 	id_cedula: string;
 	phoneNumber: string;
+	isAdmin: boolean;
+	emailVerified: boolean;
 	encryptPassword(password: string): Promise<string>;
 	validatePassword(password: string): Promise<boolean>;
 } & Document;
@@ -73,6 +75,14 @@ const userSchema = new Schema({
 			],
 		},
 	],
+	isAdmin: {
+		type: Boolean,
+		default: false,
+	},
+	emailVerified: {
+		type: Boolean,
+		default: false,
+	},
 });
 
 userSchema.methods.encryptPassword = async (password: string): Promise<string> => {

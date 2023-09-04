@@ -16,6 +16,7 @@ const productSchema = new Schema({
 		type: Schema.Types.ObjectId,
 		ref: 'User',
 		required: true,
+
 	},
 	name: {
 		type: String,
@@ -33,12 +34,6 @@ const productSchema = new Schema({
 		type: Schema.Types.ObjectId,
 		ref: 'Category',
 		required: true,
-		validate: {
-			validator(categories: any[]) {
-				return categories.length > 0;
-			},
-			message: 'Debe seleccionar al menos una categoría.',
-		},
 	}],
 	stock: {
 		type: Number,

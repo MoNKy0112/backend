@@ -30,11 +30,20 @@ const productSchema = new Schema({
 		type: Number,
 		required: true,
 	},
-	categories: [{
-		type: Schema.Types.ObjectId,
-		ref: 'Category',
-		required: true,
-	}],
+	categories: [
+		{
+		  type: Schema.Types.ObjectId,
+		  ref: 'Category',
+		  required: true,
+		  validate: {
+			validator(categories: Schema.Types.ObjectId[]) {
+			  // Custom validator function for 'categories'
+			  return categories.every((categoryId) => categoryId instanceof mongoose.Types.ObjectId);
+			},
+			message: 'Invalid category ObjectId(s).',
+		  },
+		},
+	  ],
 	stock: {
 		type: Number,
 		required: true,

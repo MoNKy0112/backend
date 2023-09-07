@@ -7,21 +7,28 @@ import jwt from 'jsonwebtoken';
 import {type ObjectId} from 'mongoose';
 
 export const signUp = async (req: Request, res: Response) => {
-	// Guardar Usuario
-	const user: IUser = new User({
-		username: req.body.username as string,
-		email: req.body.email as string,
-		password: req.body.password as string,
-	});
-	user.password = await user.encryptPassword(user.password);
-	const savedUser = await user.save();
-	// Token
-	const token: string = jwt.sign(
-		{_id: savedUser._id as ObjectId},
-		process.env.TOKEN_SECRET ?? 'tokentest',
-	);
+	try{
+		// Guardar Usuario
+		const user: IUser = new User({
+			name: req.body.username as string,
+			lastname: req.body.username as string,
+			email: req.body.username as string,
+			password: req.body.username as string,
+			id_cedula: req.body.username as string,
+			phoneNumber: req.body.username as string,
+		});
+		user.password = await user.encryptPassword(user.password);
+		const savedUser = await user.save();
+		// Token
+		const token: string = jwt.sign(
+			{_id: savedUser._id as ObjectId},
+			process.env.TOKEN_SECRET ?? 'tokentest',
+		);
 
-	res.cookie('auth-token', token).json(savedUser);
+		res.cookie('auth-token', token).json(savedUser);
+	} catch (error) {
+		res.status(500).json({error: 'Error al crear el usuario'});
+	}
 };
 
 export const signIn = async (req: Request, res: Response) => {

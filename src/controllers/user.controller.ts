@@ -1,38 +1,14 @@
 import {type Request, type Response} from 'express';
 import User from '../models/User';
 
-export const createUser = async (req: Request, res: Response) => {
+export const getUsers = async (req: Request, res: Response) => {
 	try {
-		const {name, lastname, email, password, id_cedula, phoneNumber}
-			= req.body;
-		const newUser = new User({
-			name,
-			lastname,
-			email,
-			password,
-			id_cedula,
-			phoneNumber,
-		});
-		const encryptedPassword = await newUser.encryptPassword(password);
-		newUser.password = encryptedPassword;
-		await newUser.save();
-		res.status(201).json(newUser);
-	} catch (error) {
-		res.status(500).json({error: 'Error al crear el usuario'});
-	}
-};
-
-export const getUserById = async (req: Request, res: Response) => {
-	try {
-		const user = await User.findOne({id_cedula: req.params.cedula});
-		if (!user) {
-			return res.status(404).json({error: 'Usuario no encontrado'});
-		}
-
-		res.json(user);
-	} catch (error) {
-		res.status(500).json({error: 'Error al obtener el usuario'});
-	}
+		const users = await User.find(); // Retrieve all users from the 'User' collection
+		res.status(200).json(users); // Send the users as a JSON response
+	  } catch (error) {
+		console.error('Error obteniendo los usuarios:', error);
+		res.status(500).json({ error: 'Error interno del servidor' }); // Handle and respond with an error
+	  }
 };
 
 export const updateUser = async (req: Request, res: Response) => {

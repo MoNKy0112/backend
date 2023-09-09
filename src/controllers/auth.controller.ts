@@ -73,12 +73,12 @@ export const requestPasswordReset = async (req: Request, res: Response) => {
 				expiresIn: 60 * 5,
 			},
 		);
-		const verificationLink = `http//localhost:${
+		const verificationLink = `http://localhost:${
 			process.env.PORT ?? '3000'
-		}/resetpassword/?token=${token}`;
+		}/password-reset?reset_token=${token}`;
 		const data: EmailTemplateData = {
-			nombre: verificationLink,
-			verificacionUrl: req.body.name as string,
+			nombre: req.body.name as string,
+			url: verificationLink,
 		};
 		// Data mail y enviarlo
 		await sendMail(req.body.email as string, 'reset Password', 'resetPassword', data);

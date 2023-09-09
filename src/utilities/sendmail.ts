@@ -6,7 +6,7 @@ import path from 'path';
 
 export type EmailTemplateData = {
 	nombre: string;
-	verificacionUrl?: string;
+	url?: string;
 };
 
 const transporter = nodemailer.createTransport({
@@ -21,11 +21,11 @@ const transporter = nodemailer.createTransport({
 transporter.use('compile', handlebars({
 	viewEngine: {
 		extname: '.handlebars',
-		partialsDir: path.resolve(__dirname, 'views/partials'), // Directorio de parciales
-		layoutsDir: path.resolve(__dirname, 'views/mailTemplates'), // Directorio de layouts
+		partialsDir: path.resolve(__dirname, 'mailTemplates/partials'), // Directorio de parciales
+		layoutsDir: path.resolve(__dirname, 'mailTemplates'), // Directorio de layouts
 		defaultLayout: 'main', // Layout predeterminado
 	},
-	viewPath: path.resolve(__dirname, 'utilities'),
+	viewPath: path.resolve(__dirname, 'mailTemplates'),
 }));
 
 export default async function sendMail(email: string, subject: string, template: string, data: EmailTemplateData): Promise<void> {

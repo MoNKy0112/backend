@@ -1,5 +1,5 @@
 import {type Request, type Response} from 'express';
-import {sendMail} from '../utilities/sendmail';
+import sendMail, {type EmailTemplateData} from '../utilities/sendmail';
 import User, {type IUser} from '../models/User';
 import {hash} from '../utilities/hash';
 
@@ -62,28 +62,32 @@ export const profile = async (req: Request, res: Response) => {
 };
 
 export const requestPasswordReset = async (req: Request, res: Response) => {
-	const user = await User.findOne({email: req.body.email as string});
-	if (!user) return res.status(400).json('Email is wrong');
-
-	// ENVIAR MAIL
-	const token: string = jwt.sign(
-		{_id: user._id as ObjectId},
-		process.env.TOKEN_SECRET_RESET ?? 'resettokentest',
-		{
-			expiresIn: 60 * 5,
-		},
-	);
-
-	const verificationLink = `http//localhost:${
-		process.env.PORT ?? '3000'
-	}/resetpassword/token=${token}`;
-	// Data mail y enviarlo
-
-	await sendMail(req.body.email as string, {verificationLink});
-
-	// Res.status(200).json('Email enviado')
-	res.status(200).json(token);
-	console.log(token);
+	try {
+		const user = await User.findOne({email: req.body.email as string});
+		if (!user) throw new Error('User not found!');
+		// ENVIAR MAIL
+		const token: string = jwt.sign(
+			{_id: user._id as ObjectId},
+			process.env.TOKEN_SECRET_RESET ?? 'resettokentest',
+			{
+				expiresIn: 60 * 5,
+			},
+		);
+		const verificationLink = `http//localhost:${
+			process.env.PORT ?? '3000'
+		}/resetpassword/?token=${token}`;
+		const data: EmailTemplateData = {
+			nombre: verificationLink,
+			verificacionUrl: req.body.name as string,
+		};
+		// Data mail y enviarlo
+		await sendMail(req.body.email as string, 'reset Password', 'resetPassword', data);
+		// Res.status(200).json('Email enviado')
+		res.status(200).json(token);
+		console.log(token);
+	} catch (error) {
+		res.status(400).json(error);
+	}
 };
 
 export const passwordReset = async (req: Request, res: Response) => {

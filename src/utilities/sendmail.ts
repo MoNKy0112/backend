@@ -1,30 +1,46 @@
-import {error} from 'console';
+/* eslint-disable no-console */
 import nodemailer from 'nodemailer';
+import handlebars from 'nodemailer-express-handlebars';
 import config from '../config';
+import path from 'path';
 
-export const sendMail	= async (email: string, data: any) => {
-	const transporter = nodemailer.createTransport({
-		service: 'gmail',
-		auth: {
-			user: `${process.env.EMAIL_ADDRESS || config.EMAIL_ADDRESS}`,
-			pass: `${process.env.EMAIL_PASSWORD || config.EMAIL_PASSWORD}`,
-		},
-	});
-
-	const mailOptions = {
-		from: 'test@gmail.com',
-		to: `${email}`,
-		subject: 'Reset Password',
-		text: data.verificationLink as string,
-	};
-
-	transporter.sendMail(mailOptions, (err: any, data: any) => {
-		if (err) {
-			console.log('Error occurs', err);
-			error('Error');
-		}
-
-		console.log('Email sent!!!');
-		return 'Email sent';
-	});
+export type EmailTemplateData = {
+	nombre: string;
+	verificacionUrl?: string;
 };
+
+const transporter = nodemailer.createTransport({
+	service: 'gmail',
+	auth: {
+		user: `${process.env.EMAIL_ADDRESS ?? config.EMAIL_ADDRESS}`,
+		pass: `${process.env.EMAIL_PASSWORD ?? config.EMAIL_PASSWORD}`,
+	},
+	from: `TIUN <${process.env.EMAIL_ADDRESS ?? config.EMAIL_ADDRESS}>`,
+});
+
+transporter.use('compile', handlebars({
+	viewEngine: {
+		extname: '.handlebars',
+		partialsDir: path.resolve(__dirname, 'views/partials'), // Directorio de parciales
+		layoutsDir: path.resolve(__dirname, 'views/mailTemplates'), // Directorio de layouts
+		defaultLayout: 'main', // Layout predeterminado
+	},
+	viewPath: path.resolve(__dirname, 'utilities'),
+}));
+
+export default async function sendMail(email: string, subject: string, template: string, data: EmailTemplateData): Promise<void> {
+	const mailOptions = {
+		to: email,
+		subject,
+		template,
+		context: data,
+	};
+	transporter.sendMail(mailOptions, (error, info) => {
+		if (error) {
+			console.log('Error al enviar el correo:', error);
+			throw new Error('Error al enviar el correo');
+		} else {
+			console.log('Correo enviado:', info.response);
+		}
+	});
+}

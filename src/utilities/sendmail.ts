@@ -30,6 +30,7 @@ transporter.use('compile', handlebars({
 
 export default async function sendMail(email: string, subject: string, template: string, data: EmailTemplateData): Promise<void> {
 	const mailOptions = {
+		from: 'Tienda Universitaria <tiun2023@gmail.com>',
 		to: email,
 		subject,
 		template,

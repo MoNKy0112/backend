@@ -11,11 +11,11 @@ export const signUp = async (req: Request, res: Response) => {
 		// Guardar Usuario
 		const user: IUser = new User({
 			name: req.body.username as string,
-			lastname: req.body.username as string,
-			email: req.body.username as string,
-			password: req.body.username as string,
-			id_cedula: req.body.username as string,
-			phoneNumber: req.body.username as string,
+			lastname: req.body.lastname as string,
+			email: req.body.email as string,
+			password: req.body.password as string,
+			id_cedula: req.body.id_cedula as string,
+			phoneNumber: req.body.phoneNumber as string,
 		});
 		user.password = await user.encryptPassword(user.password);
 		const savedUser = await user.save();

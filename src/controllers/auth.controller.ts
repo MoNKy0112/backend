@@ -7,7 +7,7 @@ import jwt from 'jsonwebtoken';
 import {type ObjectId} from 'mongoose';
 
 export const signUp = async (req: Request, res: Response) => {
-	try{
+	try {
 		// Guardar Usuario
 		const user: IUser = new User({
 			name: req.body.username as string,
@@ -33,7 +33,7 @@ export const signUp = async (req: Request, res: Response) => {
 
 export const signIn = async (req: Request, res: Response) => {
 	try {
-		const user = await User.findOne({ email: req.body.email as string });
+		const user = await User.findOne({email: req.body.email as string});
 
 		if (!user) {
 			throw new Error('Email is wrong'); // Lanzar una excepción en lugar de devolver un mensaje directamente
@@ -46,16 +46,16 @@ export const signIn = async (req: Request, res: Response) => {
 
 		const key = process.env.TOKEN_SECRET ?? 'tokentest';
 
-		const accessToken: string = jwt.sign({ _id: user._id as ObjectId }, key, {
+		const accessToken: string = jwt.sign({_id: user._id as ObjectId}, key, {
 			expiresIn: 60 * 15,
 		});
-		const refreshToken: string = jwt.sign({ _id: user._id as ObjectId }, key, {
+		const refreshToken: string = jwt.sign({_id: user._id as ObjectId}, key, {
 			expiresIn: 60 * 60 * 24 * 7,
 		});
 
-		res.cookie('authToken', accessToken, { httpOnly: true, secure: true, sameSite: 'strict' });
-		res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true, sameSite: 'strict' });
-		res.json({ user, accessToken, refreshToken });
+		res.cookie('authToken', accessToken, {httpOnly: true, secure: true, sameSite: 'strict'});
+		res.cookie('refreshToken', refreshToken, {httpOnly: true, secure: true, sameSite: 'strict'});
+		res.json({user, accessToken, refreshToken});
 	} catch (error) {
 		if (error instanceof Error) {
 			console.error('Error during login:', error.message);
@@ -66,7 +66,6 @@ export const signIn = async (req: Request, res: Response) => {
 		}
 	}
 };
-
 
 export const profile = async (req: Request, res: Response) => {
 	const user = await User.findById(req.userId);

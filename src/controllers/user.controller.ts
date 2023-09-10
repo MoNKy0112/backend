@@ -1,20 +1,20 @@
 import {type Request, type Response} from 'express';
-import User from '../models/User';
+import User, {type IUser} from '../models/User';
 
 export const getUsers = async (req: Request, res: Response) => {
 	try {
 		const users = await User.find(); // Retrieve all users from the 'User' collection
 		res.status(200).json(users); // Send the users as a JSON response
-	  } catch (error) {
+	} catch (error) {
 		console.error('Error obteniendo los usuarios:', error);
-		res.status(500).json({ error: 'Error interno del servidor' }); // Handle and respond with an error
-	  }
+		res.status(500).json({error: 'Error interno del servidor'}); // Handle and respond with an error
+	}
 };
 
 export const updateUser = async (req: Request, res: Response) => {
 	try {
 		const cedulaToUpdate = req.params.cedula;
-		const {name, lastname, phoneNumber} = req.body;
+		const {name, lastname, phoneNumber} = req.body as IUser;
 		const updatedUserFields = {
 			name,
 			lastname,

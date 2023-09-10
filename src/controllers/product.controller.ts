@@ -3,7 +3,7 @@ import ProductModel, {type IProduct} from '../models/Product'; // Ajusta la ruta
 
 export const createProduct = async (req: Request, res: Response) => {
 	try {
-		const productData: IProduct = req.body;
+		const productData: IProduct = req.body as IProduct;
 		console.log(productData);
 		const newProduct = new ProductModel(productData);
 		const savedProduct = await newProduct.save();
@@ -42,7 +42,7 @@ export const getProductById = async (req: Request, res: Response) => {
 export const updateProduct = async (req: Request, res: Response) => {
 	try {
 		const {productId} = req.params;
-		const productData: IProduct = req.body;
+		const productData: IProduct = req.body as IProduct;
 		const updatedProduct = await ProductModel.findByIdAndUpdate(productId, productData, {new: true});
 		if (!updatedProduct) {
 			return res.status(404).json({error: 'Producto no encontrado'});

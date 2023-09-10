@@ -1,4 +1,4 @@
-import {Schema, model, type Document} from 'mongoose';
+import {Schema, model, type Document, Types} from 'mongoose';
 
 export type IProduct = {
 	sellerId: Schema.Types.ObjectId;
@@ -32,18 +32,11 @@ const productSchema = new Schema({
 	},
 	categories: [
 		{
-		  type: Schema.Types.ObjectId,
-		  ref: 'Category',
-		  required: true,
-		  validate: {
-			validator(categories: Schema.Types.ObjectId[]) {
-			  // Custom validator function for 'categories'
-			  return categories.every((categoryId) => categoryId instanceof mongoose.Types.ObjectId);
-			},
-			message: 'Invalid category ObjectId(s).',
-		  },
+			type: Schema.Types.ObjectId,
+			ref: 'Category',
+			required: true,
 		},
-	  ],
+	],
 	stock: {
 		type: Number,
 		required: true,

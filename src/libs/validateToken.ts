@@ -22,7 +22,7 @@ export const tokenValidation = (req: Request, res: Response, next: NextFunction)
 };
 
 export const tokenResetValidation = (req: Request, res: Response, next: NextFunction) => {
-	const token = req.header('reset-token');
+	const token = req.query.reset_token as string;
 
 	if (!token) return res.status(401).json('Acceso denegado');
 

@@ -1,6 +1,6 @@
 import {Router} from 'express';
 import {signUp, signIn, profile, passwordReset, requestPasswordReset} from '../controllers/auth.controller';
-import {tokenValidation, tokenResetValidation} from '../libs/validateToken';
+import {tokenValidation, tokenResetValidation, refreshToken, generateNewAccessToken} from '../libs/validateToken';
 
 const router: Router = Router();
 
@@ -13,4 +13,6 @@ router.get('/profile', tokenValidation, profile);
 router.get('/req-pass-reset', requestPasswordReset);
 
 router.post('/password-reset', tokenResetValidation, passwordReset);
+
+router.post('/newtoken', refreshToken, generateNewAccessToken);
 export default router;

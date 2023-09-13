@@ -21,11 +21,11 @@ const transporter = nodemailer.createTransport({
 transporter.use('compile', handlebars({
 	viewEngine: {
 		extname: '.handlebars',
-		partialsDir: path.resolve(__dirname, 'mailTemplates/partials'), // Directorio de parciales
+		partialsDir: path.resolve(__dirname, 'mailTemplates'), // Directorio de parciales
 		layoutsDir: path.resolve(__dirname, 'mailTemplates'), // Directorio de layouts
-		defaultLayout: 'main', // Layout predeterminado
+		defaultLayout: false, // Layout predeterminado
 	},
-	viewPath: path.resolve(__dirname, 'mailTemplates'),
+	viewPath: path.resolve(__dirname, './mailTemplates/'),
 }));
 
 export default async function sendMail(email: string, subject: string, template: string, data: EmailTemplateData): Promise<void> {
@@ -36,6 +36,7 @@ export default async function sendMail(email: string, subject: string, template:
 		template,
 		context: data,
 	};
+	console.log(path.resolve(__dirname, 'mailTemplates/'));
 	transporter.sendMail(mailOptions, (error, info) => {
 		if (error) {
 			console.log('Error al enviar el correo:', error);

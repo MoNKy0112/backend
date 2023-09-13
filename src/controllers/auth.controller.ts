@@ -25,7 +25,7 @@ export const signUp = async (req: Request, res: Response) => {
 			process.env.TOKEN_SECRET ?? 'tokentest',
 		);
 
-		res.cookie('auth-token', token).json(savedUser);
+		res.cookie('authToken', token).json(savedUser);
 	} catch (error) {
 		res.status(500).json({error: 'Error al crear el usuario'});
 	}
@@ -45,20 +45,17 @@ export const signIn = async (req: Request, res: Response) => {
 		}
 
 		const key = process.env.TOKEN_SECRET ?? 'tokentest';
+		const refKey = process.env.REFRESH_TOKEN_SECRET ?? 'refreshtokentest';
 
 		const accessToken: string = jwt.sign({_id: user._id as ObjectId}, key, {
 			expiresIn: 60 * 15,
 		});
-		const refreshToken: string = jwt.sign({_id: user._id as ObjectId}, key, {
+		const refreshToken: string = jwt.sign({_id: user._id as ObjectId}, refKey, {
 			expiresIn: 60 * 60 * 24 * 7,
 		});
-
-		res.cookie('authToken', accessToken, {httpOnly: true, secure: true, sameSite: 'strict'});
-		res.cookie('refreshToken', refreshToken, {httpOnly: true, secure: true, sameSite: 'strict'});
-		res.json({user, accessToken, refreshToken});
-		res.cookie('authToken', accessToken, {httpOnly: true, secure: true, sameSite: 'strict'});
-		res.cookie('refreshToken', refreshToken, {httpOnly: true, secure: true, sameSite: 'strict'});
-		res.json({user, accessToken, refreshToken});
+		res.cookie('authToken', accessToken)
+			.cookie('refreshToken', refreshToken)
+			.json({user, accessToken, refreshToken});
 	} catch (error) {
 		if (error instanceof Error) {
 			console.error('Error during login:', error.message);

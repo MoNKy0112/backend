@@ -7,25 +7,33 @@ import jwt from 'jsonwebtoken';
 import {type ObjectId} from 'mongoose';
 
 export const signUp = async (req: Request, res: Response) => {
-	// Guardar Usuario
-	const user: IUser = new User({
-		username: req.body.username as string,
-		email: req.body.email as string,
-		password: req.body.password as string,
-	});
-	user.password = await user.encryptPassword(user.password);
-	const savedUser = await user.save();
-	// Token
-	const token: string = jwt.sign(
-		{_id: savedUser._id as ObjectId},
-		process.env.TOKEN_SECRET ?? 'tokentest',
-	);
+	try {
+		// Guardar Usuario
+		const user: IUser = new User({
+			name: req.body.username as string,
+			lastname: req.body.lastname as string,
+			email: req.body.email as string,
+			password: req.body.password as string,
+			id_cedula: req.body.id_cedula as string,
+			phoneNumber: req.body.phoneNumber as string,
+		});
+		user.password = await user.encryptPassword(user.password);
+		const savedUser = await user.save();
+		// Token
+		const token: string = jwt.sign(
+			{_id: savedUser._id as ObjectId},
+			process.env.TOKEN_SECRET ?? 'tokentest',
+		);
 
-	res.cookie('auth-token', token).json(savedUser);
+		res.cookie('auth-token', token).json(savedUser);
+	} catch (error) {
+		res.status(500).json({error: 'Error al crear el usuario'});
+	}
 };
 
 export const signIn = async (req: Request, res: Response) => {
 	try {
+		const user = await User.findOne({email: req.body.email as string});
 		const user = await User.findOne({email: req.body.email as string});
 
 		if (!user) {
@@ -40,8 +48,10 @@ export const signIn = async (req: Request, res: Response) => {
 		const key = process.env.TOKEN_SECRET ?? 'tokentest';
 
 		const accessToken: string = jwt.sign({_id: user._id as ObjectId}, key, {
+		const accessToken: string = jwt.sign({_id: user._id as ObjectId}, key, {
 			expiresIn: 60 * 15,
 		});
+		const refreshToken: string = jwt.sign({_id: user._id as ObjectId}, key, {
 		const refreshToken: string = jwt.sign({_id: user._id as ObjectId}, key, {
 			expiresIn: 60 * 60 * 24 * 7,
 		});
@@ -49,9 +59,17 @@ export const signIn = async (req: Request, res: Response) => {
 		res.cookie('authToken', accessToken, {httpOnly: true, secure: true, sameSite: 'strict'});
 		res.cookie('refreshToken', refreshToken, {httpOnly: true, secure: true, sameSite: 'strict'});
 		res.json({user, accessToken, refreshToken});
+		res.cookie('authToken', accessToken, {httpOnly: true, secure: true, sameSite: 'strict'});
+		res.cookie('refreshToken', refreshToken, {httpOnly: true, secure: true, sameSite: 'strict'});
+		res.json({user, accessToken, refreshToken});
 	} catch (error) {
-		console.error('Error during login:', error);
-		res.status(400).json(error); // Devolver el mensaje de error en la respuesta
+		if (error instanceof Error) {
+			console.error('Error during login:', error.message);
+			res.status(400).json(error.message);
+		} else {
+			console.error('Unknown error during login:', error);
+			res.status(500).json('An unknown error occurred.');
+		}
 	}
 };
 

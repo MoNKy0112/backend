@@ -68,9 +68,14 @@ export const signIn = async (req: Request, res: Response) => {
 };
 
 export const profile = async (req: Request, res: Response) => {
-	const user = await User.findById(req.userId);
-	if (!user) return res.status(404).json('User not found!');
-	res.json(user);
+	try {
+		console.log(req.userId);
+		const user = await User.findById(req.userId);
+		if (!user) throw new Error('User not found!');
+		res.json(user);
+	} catch (error) {
+		res.json(error);
+	}
 };
 
 export const requestPasswordReset = async (req: Request, res: Response) => {

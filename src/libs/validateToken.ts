@@ -9,27 +9,33 @@ type IPayload = {
 };
 
 export const tokenValidation = (req: Request, res: Response, next: NextFunction) => {
-	const token = req.cookies.authToken as string;
+	try {
+		const token = req.cookies.authToken as string;
 
-	if (!token) return res.status(401).json('Acceso denegado');
+		if (!token) throw new Error('token not found');
 
-	const payload = jwt.verify(token, process.env.TOKEN_SECRET ?? 'tokentest') as IPayload;
-
-	req.userId = payload._id;
-
-	next();
+		const payload = jwt.verify(token, process.env.TOKEN_SECRET ?? 'tokentest') as IPayload;
+		req.userId = payload._id;
+		res.json(payload);
+	} catch (error) {
+		res.json(error);
+	}
 };
 
 export const tokenResetValidation = (req: Request, res: Response, next: NextFunction) => {
-	const token = req.query.reset_token as string;
+	try {
+		const token = req.query.reset_token as string;
 
-	if (!token) return res.status(401).json('Acceso denegado');
+		if (!token) throw new Error('token not found');
 
-	const payload = jwt.verify(token, process.env.TOKEN_SECRET_RESET ?? 'resettokentest') as IPayload;
+		const payload = jwt.verify(token, process.env.TOKEN_SECRET_RESET ?? 'resettokentest') as IPayload;
 
-	req.userId = payload._id;
+		req.userId = payload._id;
 
-	next();
+		next();
+	} catch (error) {
+		res.json(error);
+	}
 };
 
 export const refreshToken = (req: Request, res: Response, next: NextFunction) => {

@@ -1,5 +1,6 @@
-import {type Types, type ObjectId, type FilterQuery, type UpdateQuery} from 'mongoose';
+import {type Types, type ObjectId, type FilterQuery, type UpdateQuery, Query, type QuerySelector, type Aggregate, AggregateExtract, UpdateAggregationStage, type PipelineStage} from 'mongoose';
 import Order, {type IOrder} from '../models/Order';
+import {type QueryOptions} from 'mongoose';
 
 export type IOrderFilters = {
 	userId?: Types.ObjectId;
@@ -8,6 +9,17 @@ export type IOrderFilters = {
 
 	'products.productId'?: {$all: Types.ObjectId[]};
 	// ...otros filtros...
+};
+
+export type OrderFilters = {
+	userId?: Types.ObjectId;
+	sellerId?: Types.ObjectId;
+	status?: string;
+	includeProducts?: [string]; // Lista de IDs de productos a incluir
+	excludeProducts?: [string]; // Lista de IDs de productos a excluir
+	startDate?: string; // Fecha de inicio
+	startDateOperator?: string; // Operador de fecha (opcional)
+	orderStatus?: [string] ; // Lista de estados de orden
 };
 class OrderFacade {
 	async createOrder(data: any): Promise<IOrder> {
@@ -49,6 +61,62 @@ class OrderFacade {
 			return orders;
 		} catch (error) {
 			throw new Error('Error al obtener órdenes con filtros');
+		}
+	}
+
+	async getFilteredOrders(userId: ObjectId | string, userType: string, filters: OrderFilters = {}) {
+		try {
+			let query: QueryOptions<OrderFilters> = {};
+
+			if (userType === 'Seller') {
+				query = {sellerId: userId};
+			} else if (userType === 'Buyer') {
+				query = {userId};
+			}
+
+			// Filtro de productos específicos o excluyentes.
+			if (filters.includeProducts && filters.includeProducts.length > 0) {
+				query.productIds = {$in: filters.includeProducts};
+			}
+
+			if (filters.excludeProducts && filters.excludeProducts.length > 0) {
+				query.productIds = {$nin: filters.excludeProducts};
+			}
+
+			// Filtro de fechas (mayor, menor o igual).
+			if (filters.startDate) {
+				const dateOperator = filters.startDateOperator ?? '$eq';
+				query.orderDate = {[dateOperator]: filters.startDate};
+			}
+
+			// Filtro por estado de la orden.
+			if (filters.orderStatus && filters.orderStatus.length > 0) {
+				query.status = {$in: filters.orderStatus};
+			}
+
+			const pipeline = [
+				{
+					$match: query,
+				},
+				{
+					$project: {
+						_id: 1,
+						orderDate: 1,
+						status: 1,
+						productIds: 1,
+					},
+				},
+			];
+
+			// Puedes agregar más etapas al pipeline según las necesidades.
+
+			// Ejecutar la consulta de agregación con el pipeline construido.
+			const cursor = Order.aggregate<IOrder>(pipeline);
+			const orders = cursor.exec();
+
+			return await orders;
+		} catch (error) {
+			return error;
 		}
 	}
 

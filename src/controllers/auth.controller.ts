@@ -5,6 +5,7 @@ import {hash} from '../utilities/hash';
 
 import jwt from 'jsonwebtoken';
 import {type ObjectId} from 'mongoose';
+import token from '../utilities/token';
 
 export const signUp = async (req: Request, res: Response) => {
 	try {
@@ -20,12 +21,12 @@ export const signUp = async (req: Request, res: Response) => {
 		user.password = await user.encryptPassword(user.password);
 		const savedUser = await user.save();
 		// Token
-		const token: string = jwt.sign(
-			{_id: savedUser._id as ObjectId},
-			process.env.TOKEN_SECRET ?? 'tokentest',
-		);
+		const accessToken = await token.generateAccessToken({_id: user._id as ObjectId});
+		const refreshToken = await token.generateRefreshToken({_id: user._id as ObjectId});
 
-		res.cookie('authToken', token).json(savedUser);
+		res.cookie('authToken', accessToken)
+			.cookie('refreshToken', refreshToken)
+			.json({savedUser, accessToken, refreshToken});
 	} catch (error) {
 		res.status(500).json({error: 'Error al crear el usuario'});
 	}
@@ -44,15 +45,9 @@ export const signIn = async (req: Request, res: Response) => {
 			throw new Error('Password is wrong'); // Lanzar una excepción en lugar de devolver un mensaje directamente
 		}
 
-		const key = process.env.TOKEN_SECRET ?? 'tokentest';
-		const refKey = process.env.REFRESH_TOKEN_SECRET ?? 'refreshtokentest';
+		const accessToken = await token.generateAccessToken({_id: user._id as ObjectId});
+		const refreshToken = await token.generateRefreshToken({_id: user._id as ObjectId});
 
-		const accessToken: string = jwt.sign({_id: user._id as ObjectId}, key, {
-			expiresIn: 60 * 15,
-		});
-		const refreshToken: string = jwt.sign({_id: user._id as ObjectId}, refKey, {
-			expiresIn: 60 * 60 * 24 * 7,
-		});
 		res.cookie('authToken', accessToken)
 			.cookie('refreshToken', refreshToken)
 			.json({user, accessToken, refreshToken});

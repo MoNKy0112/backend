@@ -1,25 +1,25 @@
-import {type Types, type ObjectId, type FilterQuery, type UpdateQuery, Query, type QuerySelector, type Aggregate, AggregateExtract, UpdateAggregationStage, type PipelineStage} from 'mongoose';
+import {type Types, type ObjectId, type UpdateQuery} from 'mongoose';
 import Order, {type IOrder} from '../models/Order';
 import {type QueryOptions} from 'mongoose';
 
-export type IOrderFilters = {
+// Export type IOrderFilters = {
+// 	userId?: Types.ObjectId;
+// 	sellerId?: Types.ObjectId;
+// 	status?: string;
+
+// 	'products.productId'?: {$all: Types.ObjectId[]};
+// 	// ...otros filtros...
+// };
+
+export type InterfaceOrderFilters = {
 	userId?: Types.ObjectId;
 	sellerId?: Types.ObjectId;
 	status?: string;
-
-	'products.productId'?: {$all: Types.ObjectId[]};
-	// ...otros filtros...
-};
-
-export type OrderFilters = {
-	userId?: Types.ObjectId;
-	sellerId?: Types.ObjectId;
-	status?: string;
-	includeProducts?: [string]; // Lista de IDs de productos a incluir
-	excludeProducts?: [string]; // Lista de IDs de productos a excluir
+	includeProducts?: string[]; // Lista de IDs de productos a incluir
+	excludeProducts?: string[]; // Lista de IDs de productos a excluir
 	startDate?: string; // Fecha de inicio
 	startDateOperator?: string; // Operador de fecha (opcional)
-	orderStatus?: [string] ; // Lista de estados de orden
+	orderStatus?: string[] ; // Lista de estados de orden
 };
 class OrderFacade {
 	async createOrder(data: any): Promise<IOrder> {
@@ -55,14 +55,14 @@ class OrderFacade {
 		}
 	}
 
-	async getOrdersByFilters(filters: IOrderFilters): Promise<IOrder[]> {
-		try {
-			const orders = await Order.find(filters as FilterQuery<IOrder>);
-			return orders;
-		} catch (error) {
-			throw new Error('Error al obtener órdenes con filtros');
-		}
-	}
+	// Async getOrdersByFilters(filters: IOrderFilters): Promise<IOrder[]> {
+	// 	try {
+	// 		const orders = await Order.find(filters as FilterQuery<IOrder>);
+	// 		return orders;
+	// 	} catch (error) {
+	// 		throw new Error('Error al obtener órdenes con filtros');
+	// 	}
+	// }
 
 	async getFilteredOrders(userId: ObjectId | string, userType: string, filters: OrderFilters = {}) {
 		try {

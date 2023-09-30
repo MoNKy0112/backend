@@ -1,5 +1,5 @@
 import {type ObjectId, Types, type UpdateQuery} from 'mongoose';
-import orderFacade, {type IOrderFilters} from '../facades/order.facade';
+import orderFacade, {type InterfaceOrderFilters} from '../facades/order.facade';
 import {type Request, type Response} from 'express';
 import User from '../models/User';
 import Product from '../models/Product';
@@ -31,7 +31,13 @@ export const createNewOrder = async (req: Request, res: Response) => {
 		const newOrder = await orderFacade.createOrder(orderData);
 		res.status(201).json(newOrder);
 	} catch (error) {
-		res.status(500).json({error: 'Error al crear la orden'});
+		if (error instanceof Error) {
+			console.error('error trying to create a new order:', error.message);
+			res.status(400).json(error.message);
+		} else {
+			console.error('Unknown error trying to create a new order:', error);
+			res.status(500).json('Unknown error trying to create a new order');
+		}
 	}
 };
 
@@ -41,44 +47,40 @@ export const getOrderById = async (req: Request, res: Response) => {
 		const order = await orderFacade.getOrderById(req.params.orderId);
 		res.json(order);
 	} catch (error) {
-		res.status(500).json('Error al obtener la orden');
+		if (error instanceof Error) {
+			console.error('error trying to obtain an order by Id:', error.message);
+			res.status(400).json(error.message);
+		} else {
+			console.error('Unknown error trying to obtain an order by Id:', error);
+			res.status(500).json('Unknown error trying to obtain an order by Id');
+		}
 	}
 };
 
 export const getOrders = async (req: Request, res: Response) => {
 	try {
-		const filters: IOrderFilters = {}; // Objeto para almacenar los filtros
+		// Agrega los filtros que necesites
+		const filters: InterfaceOrderFilters = {
+			userId: new Types.ObjectId(req.query.userId as string),
+			sellerId: new Types.ObjectId(req.query.sellerId as string),
+			status: req.query.status as string,
+			includeProducts: req.query.includeProducts as string[],
+			excludeProducts: req.query.excludeProducts as string[],
+			startDate: req.query.startDate as string,
+			startDateOperator: req.query.startDateOperator as string,
+		}; // Objeto para almacenar los filtros
 		console.log(req.query);
-		// Agrega los filtros que necesites, por ejemplo:
-		if (req.query.userId) {
-			const userId = req.query.userId as string;
-			filters.userId = new Types.ObjectId(userId);
-		}
 
-		if (req.query.sellerId) {
-			const sellerId = req.query.sellerId as string;
-			filters.sellerId = new Types.ObjectId(sellerId);
-		}
-
-		if (req.query.status) {
-			filters.status = req.query.status as string;
-		}
-
-		if (req.query.products) {
-			if (typeof req.query.products === 'string') {
-				const productIds = [new Types.ObjectId(req.query.products)];
-				filters['products.productId'] = {$all: productIds};
-			} else {
-				const productsArray = req.query.products as string[];
-				const productIds = productsArray.map(productId => new Types.ObjectId(productId));
-				filters['products.productId'] = {$all: productIds};
-			}
-		}
-
-		const orders = await orderFacade.getOrdersByFilters(filters);
+		const orders = await orderFacade.getFilteredOrders(req.userId, req.query.userType as string, filters);
 		res.json(orders);
 	} catch (error) {
-		res.status(500).json({error: 'Error al obtener órdenes con filtros'});
+		if (error instanceof Error) {
+			console.error('error trying to obtain an order:', error.message);
+			res.status(400).json(error.message);
+		} else {
+			console.error('Unknown error trying to obtain an order:', error);
+			res.status(500).json('Unknown error trying to obtain an order');
+		}
 	}
 };
 
@@ -97,7 +99,13 @@ export const updateOrder = async (req: Request, res: Response) => {
 		const newOrder = await orderFacade.updateOrder(req.params.orderId as ObjectId | string, orderData);
 		res.status(201).json(newOrder);
 	} catch (error) {
-		res.status(500).json(error);
+		if (error instanceof Error) {
+			console.error('error trying to update an order:', error.message);
+			res.status(400).json(error.message);
+		} else {
+			console.error('Unknown error trying to update an order:', error);
+			res.status(500).json('Unknown error trying to update an order');
+		}
 	}
 };
 
@@ -106,6 +114,12 @@ export const deleteOrder = async (req: Request, res: Response) => {
 		const orderDeleted = await orderFacade.deleteOrder(req.params.orderId as ObjectId | string);
 		res.status(201).json(orderDeleted);
 	} catch (error) {
-		res.status(500).json(error);
+		if (error instanceof Error) {
+			console.error('error trying to delete an order:', error.message);
+			res.status(400).json(error.message);
+		} else {
+			console.error('Unknown error trying to delete an order:', error);
+			res.status(500).json('Unknown error trying to delete an order');
+		}
 	}
 };

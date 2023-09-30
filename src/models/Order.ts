@@ -1,15 +1,16 @@
-import {Schema, Types, model, type Document} from 'mongoose';
+import {Schema, Types, model, type Document, type Date, type ObjectId} from 'mongoose';
 
 export type IOrder = {
-	userId: Types.ObjectId;
-	sellerId: Types.ObjectId;
+	userId: ObjectId;
+	sellerId: ObjectId;
 	products: Array<{
-		productId: Types.ObjectId;
+		productId: ObjectId;
 		quantity: number;
 		subtotal: number;
 	}>;
 	totalAmount: number;
 	status: string;
+	date: Date;
 } & Document;
 
 const orderSchema = new Schema({
@@ -33,10 +34,16 @@ const orderSchema = new Schema({
 	totalAmount: {
 		type: Number,
 		required: true,
+		default: 0,
 	},
 	status: {
 		type: String,
 		required: true,
+	},
+	date: {
+		type: Date,
+		required: true,
+		default: Date.now,
 	},
 });
 

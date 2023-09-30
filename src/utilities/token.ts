@@ -9,8 +9,8 @@ class Jwtoken {
 	private readonly refreshKey: string;
 
 	constructor() {
-		this.accessKey = process.env.TOKEN_SECRET ?? '';
-		this.refreshKey = process.env.REFRESH_TOKEN_SECRET ?? '';
+		this.accessKey = process.env.TOKEN_SECRET ?? 'TOKEN_SECRET';
+		this.refreshKey = process.env.REFRESH_TOKEN_SECRET ?? 'REFRESH_TOKEN_SECRET';
 	}
 
 	public async generateAccessToken(payload: Ipayload): Promise<string> {

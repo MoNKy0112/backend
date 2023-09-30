@@ -83,6 +83,10 @@ const userSchema = new Schema({
 		type: Boolean,
 		default: false,
 	},
+	termsandconditions: {
+		type: Boolean,
+		default: false,
+	},
 });
 
 userSchema.methods.encryptPassword = async (password: string): Promise<string> => {

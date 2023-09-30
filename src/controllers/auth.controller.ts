@@ -17,8 +17,10 @@ export const signUp = async (req: Request, res: Response) => {
 			password: req.body.password as string,
 			id_cedula: req.body.id_cedula as string,
 			phoneNumber: req.body.phoneNumber as string,
+			termsandconditions: req.body.aceptarTerminos as boolean,
 		});
 		user.password = await user.encryptPassword(user.password);
+		console.log(user);
 		const savedUser = await user.save();
 		// Token
 		const accessToken = await token.generateAccessToken({_id: user._id as ObjectId});
@@ -28,7 +30,13 @@ export const signUp = async (req: Request, res: Response) => {
 			.cookie('refreshToken', refreshToken)
 			.json({savedUser, accessToken, refreshToken});
 	} catch (error) {
-		res.status(500).json({error: 'Error al crear el usuario'});
+		if (error instanceof Error) {
+			console.error('Error during register:', error.message);
+			res.status(400).json(error.message);
+		} else {
+			console.error('Unknown error during register:', error);
+			res.status(500).json('An unknown error occurred.');
+		}
 	}
 };
 

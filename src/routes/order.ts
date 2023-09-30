@@ -4,7 +4,11 @@ import {verifyCartProducts} from '../middlewares/verifyCartProducts';
 
 const router: Router = Router();
 
+<<<<<<< HEAD
 // Router.get('/:orderId', getOrderById);
 router.get('/getorder', getOrders);
+=======
+router.get('/orders/:orderId', getOrderById);
+>>>>>>> main
 router.post('/createorder', verifyCartProducts, createNewOrder);
 export default router;

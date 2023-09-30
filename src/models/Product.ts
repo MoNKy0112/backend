@@ -1,4 +1,4 @@
-import {Schema, model, type Document} from 'mongoose';
+import {Schema, model, type Document, Types} from 'mongoose';
 
 export type IProduct = {
 	sellerId: Schema.Types.ObjectId;
@@ -16,6 +16,7 @@ const productSchema = new Schema({
 		type: Schema.Types.ObjectId,
 		ref: 'User',
 		required: true,
+
 	},
 	name: {
 		type: String,
@@ -29,17 +30,13 @@ const productSchema = new Schema({
 		type: Number,
 		required: true,
 	},
-	categories: [{
-		type: Schema.Types.ObjectId,
-		ref: 'Category',
-		required: true,
-		validate: {
-			validator(categories: any[]) {
-				return categories.length > 0;
-			},
-			message: 'Debe seleccionar al menos una categoría.',
+	categories: [
+		{
+			type: Schema.Types.ObjectId,
+			ref: 'Category',
+			required: true,
 		},
-	}],
+	],
 	stock: {
 		type: Number,
 		required: true,

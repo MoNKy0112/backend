@@ -2,19 +2,41 @@ import {Schema, model, type Document} from 'mongoose';
 import bcrypt from 'bcryptjs';
 
 export type IUser = {
-	username: string;
+	name: string;
+	lastname: string;
 	email: string;
 	password: string;
+	id_cedula: string;
+	phoneNumber: string;
+	isAdmin: boolean;
+	emailVerified: boolean;
 	encryptPassword(password: string): Promise<string>;
 	validatePassword(password: string): Promise<boolean>;
 } & Document;
 
 const userSchema = new Schema({
-	username: {
+	name: {
 		type: String,
 		required: true,
 		min: 4,
 		lowercase: true,
+	},
+	lastname: {
+		type: String,
+		required: true,
+		min: 4,
+		lowercase: true,
+	},
+	id_cedula: {
+		type: String,
+		required: true,
+		unique: true,
+		min: 4,
+		lowercase: true,
+	},
+	phoneNumber: {
+		type: String,
+		required: true,
 	},
 	email: {
 		type: String,
@@ -53,6 +75,14 @@ const userSchema = new Schema({
 			],
 		},
 	],
+	isAdmin: {
+		type: Boolean,
+		default: false,
+	},
+	emailVerified: {
+		type: Boolean,
+		default: false,
+	},
 });
 
 userSchema.methods.encryptPassword = async (password: string): Promise<string> => {

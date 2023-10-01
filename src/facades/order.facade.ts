@@ -64,9 +64,9 @@ class OrderFacade {
 	// 	}
 	// }
 
-	async getFilteredOrders(userId: ObjectId | string, userType: string, filters: OrderFilters = {}) {
+	async getFilteredOrders(userId: ObjectId | string, userType: string, filters: InterfaceOrderFilters = {}) {
 		try {
-			let query: QueryOptions<OrderFilters> = {};
+			let query: QueryOptions<InterfaceOrderFilters> = {};
 
 			if (userType === 'Seller') {
 				query = {sellerId: userId};

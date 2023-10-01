@@ -1,5 +1,6 @@
 import {type Request, type Response, type NextFunction} from 'express';
 import jwt from 'jsonwebtoken';
+import token from '../utilities/token';
 
 type IPayload = {
 	_id: string;
@@ -15,10 +16,19 @@ export const tokenValidation = (req: Request, res: Response, next: NextFunction)
 		if (!token) throw new Error('token not found');
 
 		const payload = jwt.verify(token, process.env.TOKEN_SECRET ?? 'tokentest') as IPayload;
+
 		req.userId = payload._id;
-		res.json(payload);
+		// Res.status(200).json(payload);
+		next();
 	} catch (error) {
-		res.json(error);
+		// Res.status(401).json(error);
+		if (error instanceof Error) {
+			console.error('Error whit token:', error.message);
+			res.status(401).json(error.message);
+		} else {
+			console.error('Unknown error:', error);
+			res.status(500).json('An unknown error occurred.');
+		}
 	}
 };
 
@@ -26,7 +36,7 @@ export const tokenResetValidation = (req: Request, res: Response, next: NextFunc
 	try {
 		const token = req.query.reset_token as string;
 
-		if (!token) throw new Error('token not found');
+		if (!token) throw new Error('token reset validation not found');
 
 		const payload = jwt.verify(token, process.env.TOKEN_SECRET_RESET ?? 'resettokentest') as IPayload;
 
@@ -34,7 +44,13 @@ export const tokenResetValidation = (req: Request, res: Response, next: NextFunc
 
 		next();
 	} catch (error) {
-		res.json(error);
+		if (error instanceof Error) {
+			console.error('Error whit token:', error.message);
+			res.status(401).json(error.message);
+		} else {
+			console.error('Unknown error:', error);
+			res.status(500).json('An unknown error occurred.');
+		}
 	}
 };
 
@@ -48,21 +64,29 @@ export const refreshToken = (req: Request, res: Response, next: NextFunction) =>
 
 		next();
 	} catch (error) {
-		res.json(error);
+		if (error instanceof Error) {
+			console.error('Error whit token:', error.message);
+			res.status(401).json(error.message);
+		} else {
+			console.error('Unknown error:', error);
+			res.status(500).json('An unknown error occurred.');
+		}
 	}
 };
 
-export const generateNewAccessToken = (req: Request, res: Response, next: NextFunction) => {
+export const generateNewAccessToken = async (req: Request, res: Response, next: NextFunction) => {
 	try {
-		const key = process.env.TOKEN_SECRET ?? 'tokentest';
-
-		const accessToken: string = jwt.sign({_id: req.userId}, key, {
-			expiresIn: 60 * 15,
-		});
+		const accessToken = await token.generateAccessToken({_id: req.userId});
 
 		res.cookie('authToken', accessToken)
 			.json({accessToken});
 	} catch (error) {
-		res.json(error);
+		if (error instanceof Error) {
+			console.error('Error whit token:', error.message);
+			res.status(401).json(error.message);
+		} else {
+			console.error('Unknown error:', error);
+			res.status(500).json('An unknown error occurred.');
+		}
 	}
 };

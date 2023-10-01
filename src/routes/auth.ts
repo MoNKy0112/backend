@@ -8,16 +8,18 @@ router.post('/signup', signUp);
 
 router.post('/signin', signIn);
 
-router.get('/accesstoken', tokenValidation);
+router.use('/profile', tokenValidation);
 
 router.get('/profile', profile);
 
-router.get('/refreshtoken', refreshToken);
+router.get('/resetpassword', requestPasswordReset);
 
-router.get('/req-pass-reset', requestPasswordReset);
+router.use('/newpassword', tokenResetValidation);
 
-router.post('/password-reset', tokenResetValidation, passwordReset);
+router.post('/newpassword', passwordReset);
 
-router.post('/newtoken', refreshToken, generateNewAccessToken);
+router.use('/newtoken', refreshToken);
+
+router.post('/newtoken', generateNewAccessToken);
 
 export default router;

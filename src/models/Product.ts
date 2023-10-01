@@ -51,6 +51,16 @@ const productSchema = new Schema({
 			message: 'Debe seleccionar un valor entre 0 y 100',
 		},
 	},
+	ratings: {
+		type: Number,
+		min: 1,
+		max: 5,
+		default: 0, // Inicialmente, el promedio de calificaciones es 0.
+	},
+	ratingsCount: {
+		type: Number,
+		default: 0,
+	},
 });
 
 export default model<IProduct>('Product', productSchema);

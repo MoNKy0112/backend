@@ -1,79 +1,26 @@
 import {type Request, type Response} from 'express';
-import Category, {type ICategory} from '../models/Category';
+import CategoryFacade from '../facade/category.facade';
 
-export const createCategory = async (req: Request, res: Response) => {
-	try {
-		const newCategory: ICategory = new Category({
-			name: req.body.name as string,
-			description: req.body.description as string,
-		});
-
-		await newCategory.save();
-
-		res.status(201).json(newCategory);
-	} catch (error) {
-		res.status(500).json({error: 'Error al crear la categoría'});
+class CategoryController {
+	public async createCategory(req: Request, res: Response): Promise<Response | undefined> {
+		return CategoryFacade.createCategory(req, res);
 	}
-};
 
-export const getCategories = async (req: Request, res: Response) => {
-	try {
-		const categories = await Category.find();
-		res.json(categories);
-	} catch (error) {
-		res.status(500).json({error: 'Error al obtener las categorías'});
+	public async getCategories(req: Request, res: Response): Promise<Response | undefined> {
+		return CategoryFacade.getCategories(req, res);
 	}
-};
 
-export const getCategoryById = async (req: Request, res: Response) => {
-	try {
-		const category = await Category.findById(req.params.categoryId);
-		if (!category) {
-			throw new Error('Categoría no encontrada');
-		}
-
-		res.json(category);
-	} catch (error) {
-		res.status(500).json({error: 'Error al obtener la categoría'});
+	public async getCategoryById(req: Request, res: Response): Promise<Response | undefined> {
+		return CategoryFacade.getCategoryById(req, res);
 	}
-};
 
-export const updateCategory = async (req: Request, res: Response) => {
-	try {
-		const categoryToUpdate = req.params.categoryId;
-		const {name, description} = req.body;
-		const updatedCategoryFields = {
-			name,
-			description,
-		};
-
-		const updatedCategory = await Category.findByIdAndUpdate(
-			categoryToUpdate,
-			updatedCategoryFields,
-			{new: true},
-		);
-
-		if (!updatedCategory) {
-			return res.status(404).json({error: 'Categoría no encontrada'});
-		}
-
-		res.json(updatedCategory);
-	} catch (error) {
-		res.status(500).json({error: 'Error al actualizar la categoría'});
+	public async updateCategory(req: Request, res: Response): Promise<Response | undefined> {
+		return CategoryFacade.updateCategory(req, res);
 	}
-};
 
-export const deleteCategory = async (req: Request, res: Response) => {
-	try {
-		const categoryToDelete = req.params.categoryId;
-		const deletedCategory = await Category.findByIdAndDelete(categoryToDelete);
-
-		if (!deletedCategory) {
-			return res.status(404).json({error: 'Categoría no encontrada'});
-		}
-
-		res.json(deletedCategory);
-	} catch (error) {
-		res.status(500).json({error: 'Error al eliminar la categoría'});
+	public async deleteCategory(req: Request, res: Response): Promise<Response | undefined> {
+		return CategoryFacade.deleteCategory(req, res);
 	}
-};
+}
+
+export default new CategoryController();

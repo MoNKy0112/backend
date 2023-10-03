@@ -1,7 +1,7 @@
 import {type Request, type Response} from 'express';
 import User, {type IUser} from '../models/User';
 
-class userFacade {
+class UserFacade {
 	public async getUsers(req: Request, res: Response): Promise<Response | undefined> {
 		try {
 			const users = await User.find();
@@ -55,4 +55,4 @@ class userFacade {
 	}
 }
 
-export default new userFacade();
+export default new UserFacade();

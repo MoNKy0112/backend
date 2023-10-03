@@ -1,7 +1,7 @@
 import {type Request, type Response} from 'express';
 import ProductModel, {type IProduct} from '../models/Product';
 
-class productFacade {
+class ProductFacade {
 	public async createProduct(req: Request, res: Response): Promise<Response> {
 		try {
 			const productData: IProduct = req.body as IProduct;
@@ -71,5 +71,5 @@ class productFacade {
 	}
 }
 
-export default new productFacade();
+export default new ProductFacade();
 

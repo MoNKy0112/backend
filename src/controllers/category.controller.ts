@@ -1,5 +1,5 @@
 import {type Request, type Response} from 'express';
-import CategoryFacade from '../facade/category.facade';
+import CategoryFacade from '../facades/category.facade';
 
 class CategoryController {
 	public async createCategory(req: Request, res: Response): Promise<Response | undefined> {

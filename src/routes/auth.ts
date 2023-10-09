@@ -1,6 +1,6 @@
 import {Router} from 'express';
 import {signUp, signIn, profile, passwordReset, requestPasswordReset} from '../controllers/auth.controller';
-import {tokenValidation, tokenResetValidation, refreshToken, generateNewAccessToken} from '../libs/validateToken';
+import {tokenValidation, tokenResetValidation, refreshToken, generateNewAccessToken} from '../middlewares/validateToken';
 
 const router: Router = Router();
 

@@ -10,8 +10,11 @@ export type IUser = {
 	phoneNumber: string;
 	isAdmin: boolean;
 	emailVerified: boolean;
+	createdat: Date;
+	updatedat: Date;
 	encryptPassword(password: string): Promise<string>;
 	validatePassword(password: string): Promise<boolean>;
+
 } & Document;
 
 const userSchema = new Schema({
@@ -86,6 +89,14 @@ const userSchema = new Schema({
 	termsandconditions: {
 		type: Boolean,
 		default: false,
+	},
+	createdat: {
+		type: Date,
+		require: true,
+	},
+	updatedat: {
+		type: Date,
+		require: true,
 	},
 });
 

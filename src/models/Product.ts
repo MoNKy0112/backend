@@ -1,4 +1,4 @@
-import {Schema, model, type Document, Types} from 'mongoose';
+import {Schema, model, type Document, Types, type Date, now} from 'mongoose';
 
 export type IProduct = {
 	sellerId: Schema.Types.ObjectId;
@@ -9,6 +9,10 @@ export type IProduct = {
 	categories: Schema.Types.ObjectId[];
 	stock: number;
 	discount: number;
+	ratings: number;
+	ratingsCount: number;
+	createdat: Date;
+	updatedat: Date;
 } & Document;
 
 const productSchema = new Schema({
@@ -53,13 +57,21 @@ const productSchema = new Schema({
 	},
 	ratings: {
 		type: Number,
-		min: 1,
+		min: 0,
 		max: 5,
 		default: 0, // Inicialmente, el promedio de calificaciones es 0.
 	},
 	ratingsCount: {
 		type: Number,
 		default: 0,
+	},
+	createdat: {
+		type: Date,
+		require: true,
+	},
+	updatedat: {
+		type: Date,
+		require: true,
 	},
 });
 

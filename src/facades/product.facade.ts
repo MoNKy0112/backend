@@ -1,73 +1,40 @@
-import {type Request, type Response} from 'express';
+import {type Types, type ObjectId, type UpdateQuery, type QueryOptions} from 'mongoose';
 import ProductModel, {type IProduct} from '../models/Product';
 
+export type InterfaceProductFilters = {
+	seller_id?: Types.ObjectId;
+	name?: string;
+	priceMin?: number;
+	priceMax?: number;
+	categories?: string[];
+	discountMin?: number;
+};
+
 class ProductFacade {
-	public async createProduct(req: Request, res: Response): Promise<Response> {
-		try {
-			const productData: IProduct = req.body as IProduct;
-			const newProduct = new ProductModel(productData);
-			const savedProduct = await newProduct.save();
-			return res.status(201).json(savedProduct);
-		} catch (error) {
-			console.error(error);
-			return res.status(500).json({error: 'Error al crear el producto'});
-		}
+	async createProduct(productData: IProduct) {
+		const newProduct = new ProductModel(productData);
+		const savedProduct = await newProduct.save();
+		return savedProduct;
 	}
 
-	public async getProducts(req: Request, res: Response): Promise<Response | undefined> {
-		try {
-			const products = await ProductModel.find();
-			return res.status(200).json(products);
-		} catch (error) {
-			console.error(error);
-			return res.status(500).json({error: 'Error al obtener los productos'});
-		}
+	async getProducts() {
+		const products = await ProductModel.find();
+		return products;
 	}
 
-	public async getProductById(req: Request, res: Response): Promise<Response | undefined> {
-		try {
-			const {productId} = req.params;
-			const product = await ProductModel.findById(productId);
-			if (!product) {
-				return res.status(404).json({error: 'Producto no encontrado'});
-			}
-
-			return res.status(200).json(product);
-		} catch (error) {
-			console.error(error);
-			return res.status(500).json({error: 'Error al obtener el producto'});
-		}
+	async getProductById(productId: string) {
+		const product = await ProductModel.findById(productId);
+		return product;
 	}
 
-	public async updateProduct(req: Request, res: Response): Promise<Response | undefined> {
-		try {
-			const {productId} = req.params;
-			const productData: IProduct = req.body as IProduct;
-			const updatedProduct = await ProductModel.findByIdAndUpdate(productId, productData, {new: true});
-			if (!updatedProduct) {
-				return res.status(404).json({error: 'Producto no encontrado'});
-			}
-
-			return res.json(updatedProduct);
-		} catch (error) {
-			console.error(error);
-			return res.status(500).json({error: 'Error al actualizar el producto'});
-		}
+	async updateProduct(productId: string, productData: IProduct) {
+		const updatedProduct = await ProductModel.findByIdAndUpdate(productId, productData, {new: true});
+		return updatedProduct;
 	}
 
-	public async deleteProduct(req: Request, res: Response): Promise<Response | undefined> {
-		try {
-			const {productId} = req.params;
-			const deletedProduct = await ProductModel.findByIdAndDelete(productId);
-			if (!deletedProduct) {
-				return res.status(404).json({error: 'Producto no encontrado'});
-			}
-
-			return res.json({message: 'Producto eliminado exitosamente'});
-		} catch (error) {
-			console.error(error);
-			return res.status(500).json({error: 'Error al eliminar el producto'});
-		}
+	async deleteProduct(productId: string) {
+		const deletedProduct = await ProductModel.findByIdAndDelete(productId);
+		return deletedProduct;
 	}
 }
 

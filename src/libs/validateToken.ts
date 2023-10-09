@@ -15,7 +15,7 @@ export const tokenValidation = (req: Request, res: Response, next: NextFunction)
 
 		if (!token) throw new Error('token not found');
 
-		const payload = jwt.verify(token, process.env.TOKEN_SECRET ?? 'tokentest') as IPayload;
+		const payload = jwt.verify(token, process.env.TOKEN_SECRET ?? 'TOKEN_SECRET') as IPayload;
 
 		req.userId = payload._id;
 		// Res.status(200).json(payload);
@@ -58,7 +58,7 @@ export const refreshToken = (req: Request, res: Response, next: NextFunction) =>
 	try {
 		const token = req.cookies.refreshToken as string;
 		if (!token) throw new Error('refresh token non-existent');
-		const payload = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET ?? 'refreshtokentest') as IPayload;
+		const payload = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET ?? 'REFRESH_TOKEN_SECRET') as IPayload;
 
 		req.userId = payload._id;
 

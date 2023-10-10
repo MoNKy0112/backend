@@ -11,6 +11,7 @@ type IPayload = {
 
 export const tokenValidation = (req: Request, res: Response, next: NextFunction) => {
 	try {
+		console.log(req);
 		const token = req.cookies.authToken as string;
 
 		if (!token) throw new Error('token not found');

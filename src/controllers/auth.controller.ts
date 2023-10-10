@@ -11,20 +11,18 @@ export const signUp = async (req: Request, res: Response) => {
 	try {
 		// Guardar Usuario
 		const user: IUser = new User({
-			name: req.body.username as string,
 			lastname: req.body.lastname as string,
 			email: req.body.email as string,
 			password: req.body.password as string,
+			name: req.body.username as string,
 			id_cedula: req.body.id_cedula as string,
 			phoneNumber: req.body.phoneNumber as string,
 			termsandconditions: req.body.aceptarTerminos as boolean,
-			createdat: '',
-			updatedat: '',
+			createdat: new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000)),
+			updatedat: new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000)),
 		});
 		user.password = await user.encryptPassword(user.password);
 		console.log(user);
-		user.createdat = new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000));
-		user.updatedat = new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000));
 		const savedUser = await user.save();
 		// Token
 		const accessToken = await token.generateAccessToken({_id: user._id as ObjectId});

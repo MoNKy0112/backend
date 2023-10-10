@@ -8,6 +8,8 @@ export const createProduct = async (req: Request, res: Response) => {
 	try {
 		const productData = req.body;
 		console.log(productData);
+		productData.sellerId = req.userId;
+		console.log(productData.sellerId);
 		productData.createdat = new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000));
 		productData.updatedat = new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000));
 		const savedProduct = await ProductFacade.createProduct(productData); // Llama a la fachada para crear el producto

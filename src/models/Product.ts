@@ -1,4 +1,3 @@
-import { link } from 'fs';
 import {Schema, model, type Document, Types, type Date, now} from 'mongoose';
 
 export type IProduct = {

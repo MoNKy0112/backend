@@ -1,3 +1,4 @@
+import { link } from 'fs';
 import {Schema, model, type Document, Types, type Date, now} from 'mongoose';
 
 export type IProduct = {
@@ -32,6 +33,10 @@ const productSchema = new Schema({
 	},
 	price: {
 		type: Number,
+		required: true,
+	},
+	imageUrl: {
+		type: String,
 		required: true,
 	},
 	categories: [

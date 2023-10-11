@@ -33,7 +33,6 @@ export const createNewOrder = async (req: Request, res: Response) => {
 	} catch (error) {
 		if (error instanceof Error) {
 			console.error('error trying to create a new order:', error.message);
-			res.status(400).json(error.message);
 		} else {
 			console.error('Unknown error trying to create a new order:', error);
 			res.status(500).json('Unknown error trying to create a new order');

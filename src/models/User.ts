@@ -12,6 +12,7 @@ export type IUser = {
 	emailVerified: boolean;
 	createdat: Date;
 	updatedat: Date;
+	imageUrl: string;
 	encryptPassword(password: string): Promise<string>;
 	validatePassword(password: string): Promise<boolean>;
 
@@ -48,6 +49,10 @@ const userSchema = new Schema({
 		lowercase: true,
 	},
 	password: {
+		type: String,
+		required: true,
+	},
+	imageUrl: {
 		type: String,
 		required: true,
 	},

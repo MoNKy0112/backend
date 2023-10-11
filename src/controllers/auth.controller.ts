@@ -17,6 +17,7 @@ export const signUp = async (req: Request, res: Response) => {
 			name: req.body.username as string,
 			id_cedula: req.body.id_cedula as string,
 			phoneNumber: req.body.phoneNumber as string,
+			imageUrl: req.body.imageUrl as string,
 			termsandconditions: req.body.aceptarTerminos as boolean,
 			createdat: new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000)),
 			updatedat: new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000)),

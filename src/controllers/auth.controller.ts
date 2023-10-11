@@ -94,8 +94,8 @@ export const requestPasswordReset = async (req: Request, res: Response) => {
 			},
 		);
 		const verificationLink = `http://localhost:${
-			process.env.PORT ?? '3000'
-		}/password-reset?reset_token=${token}`;
+			process.env.PORT ?? '8080'
+		}/reconfirm_password?reset_token=${token}`;
 		const data: EmailTemplateData = {
 			nombre: req.body.name as string,
 			url: verificationLink,

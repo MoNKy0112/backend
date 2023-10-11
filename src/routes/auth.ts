@@ -12,7 +12,7 @@ router.use('/profile', tokenValidation);
 
 router.get('/profile', profile);
 
-router.get('/resetpassword', requestPasswordReset);
+router.post('/resetpassword', requestPasswordReset);
 
 router.use('/newpassword', tokenResetValidation);
 

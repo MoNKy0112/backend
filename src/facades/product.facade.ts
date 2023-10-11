@@ -17,6 +17,21 @@ class ProductFacade {
 		return savedProduct;
 	}
 
+	async getProductsByFilters(filters: InterfaceProductFilters) {
+		const {seller_id, name, priceMin, priceMax, categories, discountMin} = filters;
+		const query: QueryOptions = {};
+		if (seller_id) query.sellerId = seller_id;
+		if (name) query.name = {$regex: name, $options: 'i'};
+		if (priceMin || priceMax) query.price = {};
+		if (priceMin) query.price.$gte = priceMin;
+		if (priceMax) query.price.$lte = priceMax;
+		if (categories) query.categories = {$in: categories};
+		if (discountMin) query.discount = {$gte: discountMin};
+
+		const products = await ProductModel.find(query);
+		return products;
+	}
+
 	async getProducts() {
 		const products = await ProductModel.find();
 		return products;

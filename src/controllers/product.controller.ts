@@ -46,6 +46,18 @@ export const getProductById = async (req: Request, res: Response) => {
 	}
 };
 
+export const getProductsByFilters = async (req: Request, res: Response) => {
+	try {
+		const filters: InterfaceProductFilters = req.query;
+		const products = await ProductFacade.getProductsByFilters(filters); // Llama a la fachada para obtener los productos por filtros
+		console.log(req.query);
+		return res.status(200).json(products);
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({error: 'Error al obtener los productos'});
+	}
+};
+
 export const updateProduct = async (req: Request, res: Response) => {
 	try {
 		const {productId} = req.params;

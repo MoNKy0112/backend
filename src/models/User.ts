@@ -1,5 +1,16 @@
-import {Schema, model, type Document} from 'mongoose';
+import {Schema, model, type Document, type ObjectId} from 'mongoose';
 import bcrypt from 'bcryptjs';
+
+type CartProduct = {
+	productId: ObjectId | string;
+	quantity: number;
+	subtotal: number;
+};
+
+type Cart = {
+	sellerId: ObjectId | string;
+	products: CartProduct[];
+};
 
 export type IUser = {
 	name: string;
@@ -13,6 +24,9 @@ export type IUser = {
 	createdat: Date;
 	updatedat: Date;
 	imageUrl: string;
+	favoriteCategories: ObjectId[] | string[];
+	favoriteProducts: ObjectId[] | string[];
+	cart: Cart[];
 	encryptPassword(password: string): Promise<string>;
 	validatePassword(password: string): Promise<boolean>;
 

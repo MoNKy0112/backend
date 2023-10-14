@@ -1,6 +1,7 @@
 import {type Request, type Response} from 'express';
 import sendMail, {type EmailTemplateData} from '../utilities/sendmail';
 import User, {type IUser} from '../models/User';
+import authFacade from '../facades/auth.facade';
 import {hash} from '../utilities/hash';
 
 import jwt from 'jsonwebtoken';
@@ -24,7 +25,7 @@ export const signUp = async (req: Request, res: Response) => {
 		});
 		user.password = await user.encryptPassword(user.password);
 		console.log(user);
-		const savedUser = await user.save();
+		const savedUser = await authFacade.saveuser(user);
 		// Token
 		const accessToken = await token.generateAccessToken({_id: user._id as ObjectId});
 		const refreshToken = await token.generateRefreshToken({_id: user._id as ObjectId});
@@ -45,7 +46,7 @@ export const signUp = async (req: Request, res: Response) => {
 
 export const signIn = async (req: Request, res: Response) => {
 	try {
-		const user = await User.findOne({email: req.body.email as string});
+		const user = await authFacade.validateuser(req.body.email as string);
 
 		if (!user) {
 			throw new Error('Email is wrong'); // Lanzar una excepción en lugar de devolver un mensaje directamente
@@ -76,7 +77,7 @@ export const signIn = async (req: Request, res: Response) => {
 export const profile = async (req: Request, res: Response) => {
 	try {
 		console.log(req.userId);
-		const user = await User.findById(req.userId);
+		const user = await authFacade.getuser(req.userId);
 		if (!user) throw new Error('User not found!');
 		res.json(user);
 	} catch (error) {
@@ -86,7 +87,7 @@ export const profile = async (req: Request, res: Response) => {
 
 export const requestPasswordReset = async (req: Request, res: Response) => {
 	try {
-		const user = await User.findOne({email: req.body.email as string});
+		const user = await authFacade.validateuser(req.body.email as string);
 		if (!user) throw new Error('User not found!');
 		// ENVIAR MAIL
 		const token: string = jwt.sign(
@@ -115,13 +116,9 @@ export const requestPasswordReset = async (req: Request, res: Response) => {
 
 export const passwordReset = async (req: Request, res: Response) => {
 	const secPassword = await hash(req.body.newpassword as string);
-	await User.updateOne(
-		{_id: req.userId},
-		{$set: {password: secPassword}},
-		{new: true},
-	);
+	const user = await authFacade.updateuser(req.userId, secPassword);
 
-	const user = await User.findById(req.userId);
-	console.log(user);
+	const newuser = await authFacade.getuser(req.userId);
+	console.log(newuser);
 	res.status(200).json(user);
 };

@@ -15,7 +15,7 @@ class UserController {
 		try {
 			const {userId} = req;
 			const products = req.body.products as string[];
-			const user = UserFacade.addToCart(userId, products);
+			const user = await UserFacade.addToCart(userId, products);
 
 			res.json(user).status(200);
 		} catch (error) {
@@ -33,7 +33,7 @@ class UserController {
 		try {
 			const {userId} = req;
 			const products = req.body.products as string[];
-			const user = UserFacade.removeOfCart(userId, products);
+			const user = await UserFacade.removeOfCart(userId, products);
 
 			res.json(user).status(200);
 		} catch (error) {
@@ -50,16 +50,16 @@ class UserController {
 	public async addFavoriteProducts(req: Request, res: Response) {
 		try {
 			const {userId} = req;
+			if (!userId) console.log('no userId');
 			const products = req.body.products as string[];
-			const user = UserFacade.addFavoriteProducts(userId, products);
-
-			res.json(user).status(200);
+			const user = await UserFacade.addFavoriteProducts(userId, products);
+			res.status(200).json(user);
 		} catch (error) {
 			if (error instanceof Error) {
-				console.error('error trying to add favorite products:', error.message);
+				console.error('error trying to add favorite products:');
 				res.status(400).json(error.message);
 			} else {
-				console.error('Unknown error trying to add favorite products:', error);
+				console.error('Unknown error trying to add favorite products:');
 				res.status(500).json('Unknown error trying to add favorite products');
 			}
 		}
@@ -69,7 +69,7 @@ class UserController {
 		try {
 			const {userId} = req;
 			const products = req.body.products as string[];
-			const user = UserFacade.removeFavoriteProducts(userId, products);
+			const user = await UserFacade.removeFavoriteProducts(userId, products);
 
 			res.json(user).status(200);
 		} catch (error) {
@@ -87,7 +87,7 @@ class UserController {
 		try {
 			const {userId} = req;
 			const categories = req.body.categories as string[];
-			const user = UserFacade.addFavoriteCategories(userId, categories);
+			const user = await UserFacade.addFavoriteCategories(userId, categories);
 
 			res.json(user).status(200);
 		} catch (error) {
@@ -105,7 +105,7 @@ class UserController {
 		try {
 			const {userId} = req;
 			const categories = req.body.categories as string[];
-			const user = UserFacade.removeFavoriteCategories(userId, categories);
+			const user = await UserFacade.removeFavoriteCategories(userId, categories);
 
 			res.json(user).status(200);
 		} catch (error) {

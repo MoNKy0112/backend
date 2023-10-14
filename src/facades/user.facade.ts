@@ -44,7 +44,7 @@ class UserFacade {
 	}
 
 	public async removeOfCart(userId: ObjectId | string, products: ObjectId[] | string[]) {
-
+		
 	}
 
 	public async addFavoriteProducts(userId: ObjectId | string, products: ObjectId[] | string[]) {
@@ -59,6 +59,7 @@ class UserFacade {
 				throw new Error('Usuario no encontrado'); // Lanzar un error si no se encuentra el usuario
 			}
 
+			// Console.log(user);
 			return user;
 		} catch (error) {
 			throw new Error('Error al agregar productos favoritos');
@@ -97,6 +98,7 @@ class UserFacade {
 
 			return user;
 		} catch (error) {
+			console.log('error:', error);
 			throw new Error('Error al agregar categorias favoritas');
 		}
 	}

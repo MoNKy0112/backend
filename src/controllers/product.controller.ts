@@ -46,6 +46,22 @@ export const getProductById = async (req: Request, res: Response) => {
 	}
 };
 
+export const getProductsBySeller = async (req: Request, res: Response) => {
+	try {
+		const sellerId = req.userId;
+		const products = await ProductFacade.getProductsBySeller(sellerId); // Llama a la fachada para obtener los productos por ID del vendedor
+
+		if (!products) {
+			return res.status(404).json({error: 'Productos no encontrados'});
+		}
+
+		return res.status(200).json(products);
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({error: 'Error al obtener los productos'});
+	}
+};
+
 export const getProductsByFilters = async (req: Request, res: Response) => {
 	try {
 		const filters: InterfaceProductFilters = req.query;

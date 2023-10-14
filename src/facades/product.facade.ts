@@ -42,6 +42,11 @@ class ProductFacade {
 		return product;
 	}
 
+	async getProductsBySeller(sellerId: string) {
+		const products = await ProductModel.find({sellerId});
+		return products;
+	}
+
 	async updateProduct(productId: string, productData: IProduct) {
 		const updatedProduct = await ProductModel.findByIdAndUpdate(productId, productData, {new: true});
 		return updatedProduct;

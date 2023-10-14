@@ -9,8 +9,7 @@ export type IProduct = {
 	categories: Schema.Types.ObjectId[];
 	stock: number;
 	discount: number;
-	ratings: number;
-	ratingsCount: number;
+	solds: number;
 	createdat: Date;
 	updatedat: Date;
 } & Document;
@@ -59,14 +58,9 @@ const productSchema = new Schema({
 			message: 'Debe seleccionar un valor entre 0 y 100',
 		},
 	},
-	ratings: {
+	solds: {
 		type: Number,
-		min: 0,
-		max: 5,
-		default: 0, // Inicialmente, el promedio de calificaciones es 0.
-	},
-	ratingsCount: {
-		type: Number,
+		required: true,
 		default: 0,
 	},
 	createdat: {

@@ -3,15 +3,42 @@ import UserFacade from '../facades/user.facade';
 import {type IUser} from 'models/User';
 
 class UserController {
-	public async getUsers(req: Request, res: Response): Promise<Response | undefined> {
-		return UserFacade.getUsers(req, res);
+	public async getUsers(req: Request, res: Response): Promise<void> {
+		try {
+			const users = await UserFacade.getUsers();
+			res.status(200).json(users);
+		} catch (error) {
+			if (error instanceof Error) {
+				res.status(400).json(error.message);
+			} else {
+				res.status(500).json('Unknown error trying to get users');
+			}
+		}
 	}
 
-	public async updateUser(req: Request, res: Response): Promise<Response | undefined> {
-		return UserFacade.updateUser(req, res);
+	public async updateUser(req: Request, res: Response): Promise<void> {
+		try {
+			const cedulaToUpdate = req.params.cedula;
+			const {name, lastname, phoneNumber} = req.body as IUser;
+			const updatedUserFields = {
+				name,
+				lastname,
+				phoneNumber,
+			};
+
+			const updatedUser = await UserFacade.updateUser(cedulaToUpdate, updatedUserFields);
+
+			res.status(200).json(updatedUser);
+		} catch (error) {
+			if (error instanceof Error) {
+				res.status(400).json(error.message);
+			} else {
+				res.status(500).json('Unknown error trying to update user');
+			}
+		}
 	}
 
-	public async addToCart(req: Request, res: Response) {
+	public async addToCart(req: Request, res: Response): Promise<void> {
 		try {
 			const {userId} = req;
 			const products = req.body.products as string[];
@@ -29,7 +56,7 @@ class UserController {
 		}
 	}
 
-	public async removeOfCart(req: Request, res: Response) {
+	public async removeOfCart(req: Request, res: Response): Promise<void> {
 		try {
 			const {userId} = req;
 			const products = req.body.products as string[];
@@ -47,7 +74,7 @@ class UserController {
 		}
 	}
 
-	public async addFavoriteProducts(req: Request, res: Response) {
+	public async addFavoriteProducts(req: Request, res: Response): Promise<void> {
 		try {
 			const {userId} = req;
 			if (!userId) console.log('no userId');
@@ -65,7 +92,7 @@ class UserController {
 		}
 	}
 
-	public async removeFavoriteProducts(req: Request, res: Response) {
+	public async removeFavoriteProducts(req: Request, res: Response): Promise<void> {
 		try {
 			const {userId} = req;
 			const products = req.body.products as string[];
@@ -83,7 +110,7 @@ class UserController {
 		}
 	}
 
-	public async addFavoriteCategories(req: Request, res: Response) {
+	public async addFavoriteCategories(req: Request, res: Response): Promise<void> {
 		try {
 			const {userId} = req;
 			const categories = req.body.categories as string[];
@@ -101,7 +128,7 @@ class UserController {
 		}
 	}
 
-	public async removeFavoriteCategories(req: Request, res: Response) {
+	public async removeFavoriteCategories(req: Request, res: Response): Promise<void> {
 		try {
 			const {userId} = req;
 			const categories = req.body.categories as string[];
@@ -110,7 +137,7 @@ class UserController {
 			res.json(user).status(200);
 		} catch (error) {
 			if (error instanceof Error) {
-				console.error('error trying to remove favorite categories:', error.message);
+				console.error('Error trying to remove favorite categories:', error.message);
 				res.status(400).json(error.message);
 			} else {
 				console.error('Unknown error trying to remove favorite categories:', error);
@@ -119,8 +146,18 @@ class UserController {
 		}
 	}
 
-	public async deleteUser(req: Request, res: Response): Promise<Response | undefined> {
-		return UserFacade.deleteUser(req, res);
+	public async deleteUser(req: Request, res: Response): Promise<void> {
+		try {
+			const cedulaToUpdate = req.params.cedula;
+			const user = await UserFacade.deleteUser(cedulaToUpdate);
+			res.status(200).json(user);
+		} catch (error) {
+			if (error instanceof Error) {
+				res.status(400).json(error.message);
+			} else {
+				res.status(500).json('Unknown error trying to delete user');
+			}
+		}
 	}
 }
 

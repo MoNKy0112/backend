@@ -1,28 +1,20 @@
-import {type Request, type Response} from 'express';
 import User, {type IUser} from '../models/User';
-import {type ObjectId} from 'mongoose';
+import {type UpdateQuery, type ObjectId} from 'mongoose';
 
 class UserFacade {
-	public async getUsers(req: Request, res: Response): Promise<Response | undefined> {
+	public async getUsers(): Promise<IUser[]> {
 		try {
 			const users = await User.find();
-			return res.status(200).json(users);
+			return users;
 		} catch (error) {
 			console.error('Error obteniendo los usuarios:', error);
-			res.status(500).json({error: 'Error interno del servidor'});
+			throw new Error('Error al obtener usuarios');
+			// Res.status(500).json({error: 'Error interno del servidor'});
 		}
 	}
 
-	public async updateUser(req: Request, res: Response): Promise<Response | undefined> {
+	public async updateUser(cedulaToUpdate: string, updatedUserFields: UpdateQuery<IUser>): Promise<IUser> {
 		try {
-			const cedulaToUpdate = req.params.cedula;
-			const {name, lastname, phoneNumber} = req.body as IUser;
-			const updatedUserFields = {
-				name,
-				lastname,
-				phoneNumber,
-			};
-
 			const updatedUser = await User.findOneAndUpdate(
 				{id_cedula: cedulaToUpdate},
 				updatedUserFields,
@@ -30,12 +22,16 @@ class UserFacade {
 			);
 
 			if (!updatedUser) {
-				return res.status(404).json({error: 'Usuario no encontrado'});
+				throw new Error('User not found');
 			}
 
-			res.json(updatedUser);
+			return updatedUser;
 		} catch (error) {
-			res.status(500).json({error: 'Error al actualizar el usuario'});
+			if (error instanceof Error) {
+				throw error;
+			} else {
+				throw new Error(`Error trying to update user with id_cedula ${cedulaToUpdate}`);
+			}
 		}
 	}
 
@@ -44,7 +40,7 @@ class UserFacade {
 	}
 
 	public async removeOfCart(userId: ObjectId | string, products: ObjectId[] | string[]) {
-		
+
 	}
 
 	public async addFavoriteProducts(userId: ObjectId | string, products: ObjectId[] | string[]) {
@@ -121,19 +117,18 @@ class UserFacade {
 		}
 	}
 
-	public async deleteUser(req: Request, res: Response): Promise<Response | undefined> {
+	public async deleteUser(cedulaToDelete: string): Promise<IUser> {
 		try {
-			const cedulaToDelete = req.params.cedula;
 			const deletedUser = await User.findOneAndDelete({
 				id_cedula: cedulaToDelete,
 			});
 			if (!deletedUser) {
-				return res.status(404).json({error: 'Usuario no encontrado'});
+				throw new Error('User not found');
 			}
 
-			res.json({message: 'Usuario eliminado exitosamente'});
+			return deletedUser;
 		} catch (error) {
-			res.status(500).json({error: 'Error al eliminar el usuario'});
+			throw new Error('Error trying to delete user');
 		}
 	}
 }

@@ -4,6 +4,7 @@ import {type IUser} from 'models/User';
 
 class UserController {
 	public async getUsers(req: Request, res: Response): Promise<void> {
+		console.log('users');
 		try {
 			const users = await UserFacade.getUsers();
 			res.status(200).json(users);

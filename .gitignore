@@ -228,3 +228,4 @@ node_modules
 .build
 .next
 
+.vercel

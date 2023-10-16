@@ -12,7 +12,7 @@ import userRoutes from './routes/user';
 import productRoutes from './routes/product';
 import categoriesRoutes from './routes/category';
 // Settings
-app.set('port', config.SERVER_PORT);
+app.set('port', config.SERVER_PORT || 3000);
 
 // Midllewares
 app.use(cors({
@@ -22,6 +22,12 @@ app.use(cors({
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(cookieParser());
+
+app.get('/', (req, res) => {
+	res.json({
+		message: '🦄🌈✨👋🌎🌍🌏✨🌈🦄',
+	});
+});
 
 // Routes
 app.use(authRoutes);

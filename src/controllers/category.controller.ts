@@ -67,7 +67,7 @@ export const deleteCategory = async (req: Request, res: Response) => {
 		if (!deletedCategory) {
 			return res.status(404).json({error: 'Categoría no encontrada'});
 		}
-
+		
 		res.json(deletedCategory);
 	} catch (error) {
 		res.status(500).json({error: 'Error al eliminar la categoría'});

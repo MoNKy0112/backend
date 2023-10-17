@@ -70,17 +70,17 @@ export const signIn = async (req: Request, res: Response) => {
 			secure: true, // Solo se envía a través de conexiones HTTPS
 			httpOnly: true, // No es accesible desde JavaScript en el navegador
 			sameSite: 'lax',
-			domain: 'ti-un-front-fork.vercel.app',
+			domain: 'https://ti-un-front-fork.vercel.app',
 		}).cookie('refreshToken', refreshToken, {
 			secure: true, // Solo se envía a través de conexiones HTTPS
 			httpOnly: true, // No es accesible desde JavaScript en el navegador
 			sameSite: 'lax',
-			domain: 'ti-un-front-fork.vercel.app',
+			domain: 'https://ti-un-front-fork.vercel.app',
 		}).cookie('refreshToken1', refreshToken, {
 			secure: true, // Solo se envía a través de conexiones HTTPS
 			httpOnly: true, // No es accesible desde JavaScript en el navegador
 			sameSite: 'none',
-			domain: 'ti-un-front-fork.vercel.app',
+			domain: 'https://ti-un-front-fork.vercel.app',
 		}).json({user, accessToken, refreshToken});
 	} catch (error) {
 		if (error instanceof Error) {

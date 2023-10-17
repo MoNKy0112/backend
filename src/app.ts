@@ -16,7 +16,7 @@ app.set('port', config.SERVER_PORT || 3000);
 
 // Midllewares
 app.use(cors({
-	origin: 'http://localhost:8080',
+	origin: 'https://ti-un-front-fork-1to5-p40d73dne-angels-projects-a672c1d1.vercel.app/',
 	credentials: true,
 }));
 app.use(morgan('dev'));

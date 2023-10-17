@@ -76,6 +76,7 @@ export const signIn = async (req: Request, res: Response) => {
 			httpOnly: true, // No es accesible desde JavaScript en el navegador
 			path: '/', // Disponible en todas las rutas
 			domain: process.env.NODE_ENV === 'development' ? '.localhost' : '.vercel.app',
+			sameSite: 'none',
 		}).cookie('refreshToken', refreshToken, {
 			maxAge: 3600000, // Duración de 1 hora
 			secure: true, // Solo se envía a través de conexiones HTTPS

@@ -34,6 +34,7 @@ export const signUp = async (req: Request, res: Response) => {
 			secure: true, // Solo se envía a través de conexiones HTTPS
 			httpOnly: true, // No es accesible desde JavaScript en el navegador
 			sameSite: 'none',
+			path: '/',
 		}).cookie('refreshToken', refreshToken, {
 			secure: true, // Solo se envía a través de conexiones HTTPS
 			httpOnly: true, // No es accesible desde JavaScript en el navegador

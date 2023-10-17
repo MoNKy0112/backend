@@ -30,9 +30,17 @@ export const signUp = async (req: Request, res: Response) => {
 		const accessToken = await token.generateAccessToken({_id: user._id as ObjectId});
 		const refreshToken = await token.generateRefreshToken({_id: user._id as ObjectId});
 
-		res.cookie('authToken', accessToken)
-			.cookie('refreshToken', refreshToken)
-			.json({savedUser, accessToken, refreshToken});
+		res.cookie('authToken', accessToken, {
+			maxAge: 3600000, // Duración de 1 hora
+			secure: true, // Solo se envía a través de conexiones HTTPS
+			httpOnly: true, // No es accesible desde JavaScript en el navegador
+			path: '/', // Disponible en todas las rutas
+		}).cookie('refreshToken', refreshToken, {
+			maxAge: 3600000, // Duración de 1 hora
+			secure: true, // Solo se envía a través de conexiones HTTPS
+			httpOnly: true, // No es accesible desde JavaScript en el navegador
+			path: '/', // Disponible en todas las rutas
+		}).json({savedUser, accessToken, refreshToken});
 	} catch (error) {
 		if (error instanceof Error) {
 			console.error('Error during register:', error.message);
@@ -60,9 +68,17 @@ export const signIn = async (req: Request, res: Response) => {
 		const accessToken = await token.generateAccessToken({_id: user._id as ObjectId});
 		const refreshToken = await token.generateRefreshToken({_id: user._id as ObjectId});
 
-		res.cookie('authToken', accessToken)
-			.cookie('refreshToken', refreshToken)
-			.json({user, accessToken, refreshToken});
+		res.cookie('authToken', accessToken, {
+			maxAge: 3600000, // Duración de 1 hora
+			secure: true, // Solo se envía a través de conexiones HTTPS
+			httpOnly: true, // No es accesible desde JavaScript en el navegador
+			path: '/', // Disponible en todas las rutas
+		}).cookie('refreshToken', refreshToken, {
+			maxAge: 3600000, // Duración de 1 hora
+			secure: true, // Solo se envía a través de conexiones HTTPS
+			httpOnly: true, // No es accesible desde JavaScript en el navegador
+			path: '/', // Disponible en todas las rutas
+		}).json({user, accessToken, refreshToken});
 	} catch (error) {
 		if (error instanceof Error) {
 			console.error('Error during login:', error.message);

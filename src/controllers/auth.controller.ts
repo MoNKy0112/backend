@@ -31,6 +31,7 @@ export const signUp = async (req: Request, res: Response) => {
 		const refreshToken = await token.generateRefreshToken({_id: user._id as ObjectId});
 
 		res.cookie('authToken', accessToken, {
+			maxAge: 36000,
 			secure: true, // Solo se envía a través de conexiones HTTPS
 			httpOnly: true, // No es accesible desde JavaScript en el navegador
 			sameSite: 'none',

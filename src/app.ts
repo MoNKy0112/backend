@@ -14,6 +14,7 @@ import categoriesRoutes from './routes/category';
 // Settings
 app.set('port', config.SERVER_PORT || 3000);
 // Midllewares
+
 app.use(cors({
 	origin: 'https://ti-un-front-fork.vercel.app',
 	credentials: true,

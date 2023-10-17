@@ -8,7 +8,7 @@
           ]
         },
         {
-          "source": "/https://ti-un-front-fork.vercel.app/(.*)",
+          "source": "/vercel_app_domain_name/(.*)",
           "headers": [
             { "key": "Access-Control-Allow-Origin", "value": "*" }
           ]

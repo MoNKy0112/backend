@@ -29,6 +29,28 @@ app.get('/', (req, res) => {
 	});
 });
 
+app.get('/set-cookie', (req, res) => {
+	try {
+		// Intenta configurar la cookie
+		res.cookie('mi-cookie', 'mi-valor', {
+			maxAge: 3600000, // Duración de 1 hora
+			secure: true, // Solo se envía a través de conexiones HTTPS
+			httpOnly: true, // No es accesible desde JavaScript en el navegador
+			path: '/', // Disponible en todas las rutas
+			domain: '.vercel.app', // Ajusta esto según tus necesidades
+			sameSite: 'none', // Ajusta esto según tus necesidades
+		});
+
+		// Envía una respuesta de éxito si la cookie se configuró correctamente
+		res.send('Cookie configurada con éxito');
+	} catch (error) {
+		// Maneja cualquier error que pueda ocurrir al configurar la cookie
+		console.error('Error al configurar la cookie:', error);
+		// Envía una respuesta de error al cliente
+		res.status(500).send('Error al configurar la cookie');
+	}
+});
+
 // Routes
 app.use(authRoutes);
 app.use(orderRoutes);

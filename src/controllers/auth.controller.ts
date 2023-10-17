@@ -75,19 +75,20 @@ export const signIn = async (req: Request, res: Response) => {
 			secure: true, // Solo se envía a través de conexiones HTTPS
 			httpOnly: true, // No es accesible desde JavaScript en el navegador
 			path: '/', // Disponible en todas las rutas
-			domain: process.env.NODE_ENV === 'development' ? '.localhost' : 'backend-6fx2.vercel.app',
+			domain: process.env.NODE_ENV === 'development' ? '.localhost' : '.vercel.app',
 		}).cookie('refreshToken', refreshToken, {
 			maxAge: 3600000, // Duración de 1 hora
 			secure: true, // Solo se envía a través de conexiones HTTPS
 			httpOnly: true, // No es accesible desde JavaScript en el navegador
 			path: '/', // Disponible en todas las rutas
-			domain: 'backend-6fx2.vercel.app',
+			domain: '.vercel.app',
+			sameSite: 'none',
 		}).cookie('refreshToken1', refreshToken, {
 			maxAge: 3600000, // Duración de 1 hora
 			secure: true, // Solo se envía a través de conexiones HTTPS
 			httpOnly: true, // No es accesible desde JavaScript en el navegador
-			path: '/', // Disponible en todas las rutas
-			domain: 'vercel.app',
+			domain: '.vercel.app',
+			sameSite: 'none',
 		}).json({user, accessToken, refreshToken});
 	} catch (error) {
 		if (error instanceof Error) {

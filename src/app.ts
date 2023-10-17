@@ -13,17 +13,10 @@ import productRoutes from './routes/product';
 import categoriesRoutes from './routes/category';
 // Settings
 app.set('port', config.SERVER_PORT || 3000);
-const allowedOrigins = ['https://ti-un-front-fork.vercel.app', 'http://localhost:8080'];
-
 // Midllewares
 app.use(cors({
-	origin(origin, callback) {
-		if (!origin || allowedOrigins.includes(origin)) {
-			callback(null, true);
-		} else {
-			callback(new Error('Not allowed by CORS'));
-		}
-	},
+	origin: 'https://ti-un-front-fork.vercel.app',
+	credentials: true,
 }));
 app.use(morgan('dev'));
 app.use(express.json());

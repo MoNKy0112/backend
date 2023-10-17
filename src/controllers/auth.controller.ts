@@ -60,8 +60,12 @@ export const signIn = async (req: Request, res: Response) => {
 		const accessToken = await token.generateAccessToken({_id: user._id as ObjectId});
 		const refreshToken = await token.generateRefreshToken({_id: user._id as ObjectId});
 
-		res.cookie('authToken', accessToken)
-			.cookie('refreshToken', refreshToken)
+		res.cookie('authToken', accessToken, {
+			sameSite: 'lax',
+		})
+			.cookie('refreshToken', refreshToken, {
+				sameSite: 'lax',
+			})
 			.json({user, accessToken, refreshToken});
 	} catch (error) {
 		if (error instanceof Error) {

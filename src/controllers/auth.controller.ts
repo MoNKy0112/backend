@@ -31,17 +31,13 @@ export const signUp = async (req: Request, res: Response) => {
 		const refreshToken = await token.generateRefreshToken({_id: user._id as ObjectId});
 
 		res.cookie('authToken', accessToken, {
-			maxAge: 3600000, // Duración de 1 hora
 			secure: true, // Solo se envía a través de conexiones HTTPS
 			httpOnly: true, // No es accesible desde JavaScript en el navegador
-			path: '/', // Disponible en todas las rutas
-			domain: process.env.NODE_ENV === 'development' ? '.localhost' : 'backend-6fx2.vercel.app',
+			sameSite: 'lax',
 		}).cookie('refreshToken', refreshToken, {
-			maxAge: 3600000, // Duración de 1 hora
 			secure: true, // Solo se envía a través de conexiones HTTPS
 			httpOnly: true, // No es accesible desde JavaScript en el navegador
-			path: '/', // Disponible en todas las rutas
-			domain: process.env.NODE_ENV === 'development' ? '.localhost' : 'backend-6fx2.vercel.app',
+			sameSite: 'lax',
 		}).json({savedUser, accessToken, refreshToken});
 	} catch (error) {
 		if (error instanceof Error) {
@@ -71,24 +67,17 @@ export const signIn = async (req: Request, res: Response) => {
 		const refreshToken = await token.generateRefreshToken({_id: user._id as ObjectId});
 
 		res.cookie('authToken', accessToken, {
-			maxAge: 3600000, // Duración de 1 hora
 			secure: true, // Solo se envía a través de conexiones HTTPS
 			httpOnly: true, // No es accesible desde JavaScript en el navegador
-			path: '/', // Disponible en todas las rutas
-			domain: process.env.NODE_ENV === 'development' ? '.localhost' : '.vercel.app',
+			sameSite: 'lax',
 		}).cookie('refreshToken', refreshToken, {
-			maxAge: 3600000, // Duración de 1 hora
 			secure: true, // Solo se envía a través de conexiones HTTPS
 			httpOnly: true, // No es accesible desde JavaScript en el navegador
-			path: '/', // Disponible en todas las rutas
-			domain: '.vercel.app',
-			sameSite: 'none',
+			sameSite: 'lax',
 		}).cookie('refreshToken1', refreshToken, {
-			maxAge: 3600000, // Duración de 1 hora
 			secure: true, // Solo se envía a través de conexiones HTTPS
 			httpOnly: true, // No es accesible desde JavaScript en el navegador
-			domain: '.vercel.app',
-			sameSite: 'none',
+			sameSite: 'lax',
 		}).json({user, accessToken, refreshToken});
 	} catch (error) {
 		if (error instanceof Error) {

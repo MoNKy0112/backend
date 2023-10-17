@@ -33,12 +33,9 @@ app.get('/set-cookie', (req, res) => {
 	try {
 		// Intenta configurar la cookie
 		res.cookie('mi-cookie', 'mi-valor', {
-			maxAge: 3600000, // Duración de 1 hora
 			secure: true, // Solo se envía a través de conexiones HTTPS
 			httpOnly: true, // No es accesible desde JavaScript en el navegador
-			path: '/', // Disponible en todas las rutas
-			domain: '.vercel.app', // Ajusta esto según tus necesidades
-			sameSite: 'none', // Ajusta esto según tus necesidades
+			sameSite: 'lax', // Ajusta esto según tus necesidades
 		});
 
 		// Envía una respuesta de éxito si la cookie se configuró correctamente

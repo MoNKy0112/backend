@@ -113,7 +113,7 @@ export const requestPasswordReset = async (req: Request, res: Response) => {
 			{_id: user._id as ObjectId},
 			process.env.TOKEN_SECRET_RESET ?? 'resettokentest',
 			{
-				expiresIn: 60 * 5,
+				expiresIn: 60 * 60,
 			},
 		);
 		// Const verificationLink = `http://localhost:${
@@ -127,7 +127,7 @@ export const requestPasswordReset = async (req: Request, res: Response) => {
 		// Data mail y enviarlo
 		await sendMail(req.body.email as string, 'reset Password', 'resetPassword', data);
 		// Res.status(200).json('Email enviado')
-		res.status(200).json(token);
+		res.status(200).json({token, verificationLink});
 		console.log(token, verificationLink);
 	} catch (error) {
 		res.status(400).json(error);

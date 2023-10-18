@@ -7,6 +7,7 @@ import {hash} from '../utilities/hash';
 import jwt from 'jsonwebtoken';
 import {type ObjectId} from 'mongoose';
 import token from '../utilities/token';
+import config from '../config';
 
 export const signUp = async (req: Request, res: Response) => {
 	try {
@@ -115,9 +116,10 @@ export const requestPasswordReset = async (req: Request, res: Response) => {
 				expiresIn: 60 * 5,
 			},
 		);
-		const verificationLink = `http://localhost:${
-			process.env.PORT ?? '8080'
-		}/reconfirm_password?reset_token=${token}`;
+		// Const verificationLink = `http://localhost:${
+		// 	process.env.PORT ?? '8080'
+		// }/reconfirm_password?reset_token=${token}`;
+		const verificationLink = `${config.FRONT_URL ?? `http://localhost:${process.env.PORT ?? '8080'}`}/reconfirm_password?reset_token=${token}`;
 		const data: EmailTemplateData = {
 			nombre: req.body.name as string,
 			url: verificationLink,
@@ -126,7 +128,7 @@ export const requestPasswordReset = async (req: Request, res: Response) => {
 		await sendMail(req.body.email as string, 'reset Password', 'resetPassword', data);
 		// Res.status(200).json('Email enviado')
 		res.status(200).json(token);
-		console.log(token);
+		console.log(token, verificationLink);
 	} catch (error) {
 		res.status(400).json(error);
 	}

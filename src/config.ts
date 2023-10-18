@@ -9,5 +9,5 @@ export default {
 	SERVER_PORT: process.env.PORT ?? 3000,
 	EMAIL_ADDRESS: 'tiun2023@gmail.com',
 	EMAIL_PASSWORD: 'spckusbymxxijcpj',
-	FRONT_URL: 'https://ti-un-front-fork.vercel.app/',
+	FRONT_URL: 'https://ti-un-front-vr3s.vercel.app',
 };

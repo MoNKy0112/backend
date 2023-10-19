@@ -1,16 +1,25 @@
 import {Router} from 'express';
-import { signUp,signIn,profile,passwordReset,requestPasswordReset} from '../controllers/auth.controller';
-import { tokenValidation, tokenResetValidation} from '../libs/validateToken';
+import {signUp, signIn, profile, passwordReset, requestPasswordReset} from '../controllers/auth.controller';
+import {tokenValidation, tokenResetValidation, refreshToken, generateNewAccessToken} from '../middlewares/validateToken';
 
-const router:Router = Router();
+const router: Router = Router();
 
-router.post('/signup',signUp);
+router.post('/signup', signUp);
 
-router.post('/signin',signIn);
+router.post('/signin', signIn);
 
-router.get('/profile',tokenValidation,profile);
+router.use('/profile', tokenValidation);
 
-router.get('/req-pass-reset',requestPasswordReset);
+router.get('/profile', profile);
 
-router.post('/password-reset',tokenResetValidation,passwordReset);
+router.post('/resetpassword', requestPasswordReset);
+
+router.use('/newpassword', tokenResetValidation);
+
+router.post('/newpassword', passwordReset);
+
+router.use('/newtoken', refreshToken);
+
+router.post('/newtoken', generateNewAccessToken);
+
 export default router;

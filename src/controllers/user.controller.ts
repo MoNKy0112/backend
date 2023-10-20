@@ -42,9 +42,9 @@ class UserController {
 	public async addToCart(req: Request, res: Response): Promise<void> {
 		try {
 			const {userId} = req;
-			const products = req.body.products as string[];
-			const user = await UserFacade.addToCart(userId, products);
-
+			const productId = req.body.product as string;
+			const quantity = req.body.quantity as number; // Obtén la cantidad desde el cuerpo de la solicitud
+			const user = await UserFacade.addToCart(userId, productId, quantity);
 			res.json(user).status(200);
 		} catch (error) {
 			if (error instanceof Error) {
@@ -60,8 +60,8 @@ class UserController {
 	public async removeOfCart(req: Request, res: Response): Promise<void> {
 		try {
 			const {userId} = req;
-			const products = req.body.products as string[];
-			const user = await UserFacade.removeOfCart(userId, products);
+			const product = req.body.products as string;
+			const user = await UserFacade.removeOfCart(userId, product);
 
 			res.json(user).status(200);
 		} catch (error) {

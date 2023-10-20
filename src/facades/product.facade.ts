@@ -37,9 +37,15 @@ class ProductFacade {
 		return products;
 	}
 
-	async getProductById(productId: string) {
-		const product = await ProductModel.findById(productId);
-		return product;
+	async getProductById(productId: string | ObjectId): Promise<IProduct> {
+		try {
+			const product = await ProductModel.findById(productId);
+			if (!product) throw new Error('producto no encontrado');
+			return product;
+		} catch (error) {
+			console.error('Error obteniendo el producto:', error);
+			throw new Error('Error obteniendo el producto');
+		}
 	}
 
 	async getProductsBySeller(sellerId: string) {

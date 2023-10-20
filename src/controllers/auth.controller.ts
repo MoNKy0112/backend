@@ -68,17 +68,13 @@ export const signIn = async (req: Request, res: Response) => {
 
 		const accessToken = await token.generateAccessToken({_id: user._id as ObjectId});
 		const refreshToken = await token.generateRefreshToken({_id: user._id as ObjectId});
-
+		console.log(!(process.env.NODE_ENV === 'dev'));
 		res.cookie('authToken', accessToken, {
-			secure: true, // Solo se envía a través de conexiones HTTPS
+			secure: !(process.env.NODE_ENV === 'dev'), // Solo se envía a través de conexiones HTTPS
 			httpOnly: true, // No es accesible desde JavaScript en el navegador
 			sameSite: 'none',
 		}).cookie('refreshToken', refreshToken, {
-			secure: true, // Solo se envía a través de conexiones HTTPS
-			httpOnly: true, // No es accesible desde JavaScript en el navegador
-			sameSite: 'none',
-		}).cookie('refreshToken1', refreshToken, {
-			secure: true, // Solo se envía a través de conexiones HTTPS
+			secure: !(process.env.NODE_ENV === 'dev'), // Solo se envía a través de conexiones HTTPS
 			httpOnly: true, // No es accesible desde JavaScript en el navegador
 			sameSite: 'none',
 		}).json({user, accessToken, refreshToken});

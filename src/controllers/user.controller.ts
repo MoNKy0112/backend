@@ -17,6 +17,20 @@ class UserController {
 		}
 	}
 
+	public async getUserById(req: Request, res: Response): Promise<void> {
+		try {
+			const userId = req.params.id;
+			const user = await UserFacade.getUserById(userId);
+			res.status(200).json(user);
+		} catch (error) {
+			if (error instanceof Error) {
+				res.status(400).json(error.message);
+			} else {
+				res.status(500).json('Unknown error trying to get users');
+			}
+		}
+	}
+
 	public async updateUser(req: Request, res: Response): Promise<void> {
 		try {
 			const cedulaToUpdate = req.params.cedula;
@@ -60,8 +74,8 @@ class UserController {
 	public async removeOfCart(req: Request, res: Response): Promise<void> {
 		try {
 			const {userId} = req;
-			const product = req.body.products as string;
-			const user = await UserFacade.removeOfCart(userId, product);
+			const productId = req.body.product as string;
+			const user = await UserFacade.removeOfCart(userId, productId);
 
 			res.json(user).status(200);
 		} catch (error) {

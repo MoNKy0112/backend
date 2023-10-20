@@ -50,21 +50,22 @@ class UserFacade {
 
 	public async addToCart(userId: ObjectId | string, productId: ObjectId | string, quantity: number) {
 		try {
+			if (!quantity)quantity = 1;
 			const user = await this.getUserById(userId);
 			const product = await productFacade.getProductById(productId);
 			// Verifica si el vendedor ya existe en el carrito del usuario
-			const existingCart = user.cart.find(cartEntry => cartEntry.sellerId === product.sellerId);
-
+			const existingCart = user.cart.find(cartEntry => cartEntry.sellerId.toString() === product.sellerId.toString());
+			console.log(user.cart.find(c => c.sellerId.toString()));
 			if (existingCart) {
 				// Si el vendedor ya existe, actualiza el producto o agrégalo si no existe
-				const existingProduct = existingCart.products.find(productCart => productCart.productId === product.id);
+				const existingProduct = existingCart.products.find(productCart => productCart.productId.toString() === product.id.toString());
 
 				if (existingProduct) {
 					existingProduct.quantity += quantity;
 					existingProduct.subtotal += quantity * product.price; // Asegúrate de obtener el precio del producto
 				} else {
 					existingCart.products.push({
-						productId,
+						productId: product.id as ObjectId,
 						quantity,
 						subtotal: quantity * product.price,
 					});
@@ -72,10 +73,10 @@ class UserFacade {
 			} else {
 				// Si el vendedor no existe, crea una nueva entrada de carrito
 				user.cart.push({
-					sellerId: productId,
+					sellerId: product.sellerId,
 					products: [
 						{
-							productId,
+							productId: product.id as ObjectId,
 							quantity,
 							subtotal: quantity * product.price,
 						},
@@ -98,11 +99,12 @@ class UserFacade {
 			const product = await productFacade.getProductById(productId);
 
 			// Encuentra el vendedor en el carrito del usuario
-			const cartEntry = user.cart.find(cartEntry => cartEntry.sellerId === product.sellerId);
-
+			const cartEntry = user.cart.find(cartEntry => cartEntry.sellerId.toString() === product.sellerId.toString());
+			// Console.log(user.cart[1].sellerId.toString() === product.sellerId.toString());
+			console.log(cartEntry);
 			if (cartEntry) {
 				// Encuentra el producto en el carrito del vendedor
-				const productIndex = cartEntry.products.findIndex(productCart => productCart.productId === product.id);
+				const productIndex = cartEntry.products.findIndex(productCart => productCart.productId.toString() === product.id.toString());
 
 				if (productIndex !== -1) {
 					// Elimina el producto del carrito del vendedor
@@ -220,3 +222,4 @@ class UserFacade {
 }
 
 export default new UserFacade();
+

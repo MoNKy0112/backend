@@ -5,6 +5,7 @@ import {tokenValidation} from '../middlewares/validateToken';
 const router = express.Router();
 
 router.get('/users', UserController.getUsers);
+router.get('/user/:id', UserController.getUserById);
 router.put('/users/:cedula', UserController.updateUser);
 router.delete('/users/:cedula', UserController.deleteUser);
 

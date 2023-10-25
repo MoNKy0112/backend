@@ -1,6 +1,7 @@
 import express from 'express';
 import UserController from '../controllers/user.controller';
 import {tokenValidation} from '../middlewares/validateToken';
+import {verifyStockToAdd} from '../middlewares/verifyCartProducts';
 
 const router = express.Router();
 
@@ -10,7 +11,7 @@ router.put('/users/:cedula', UserController.updateUser);
 router.delete('/users/:cedula', UserController.deleteUser);
 
 router.use('/user', tokenValidation);
-router.put('/user/cart/add', UserController.addToCart);
+router.put('/user/cart/add', verifyStockToAdd, UserController.addToCart);
 router.put('/user/cart/remove', UserController.removeOfCart);
 router.put('/user/favprod/add', UserController.addFavoriteProducts);
 router.put('/user/favprod/remove', UserController.removeFavoriteProducts);

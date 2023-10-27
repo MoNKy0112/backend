@@ -1,6 +1,6 @@
 import {type Request, type Response, type NextFunction} from 'express';
 import {type ObjectId} from 'mongoose';
-import productFacade from 'facades/product.facade';
+import productFacade from '../facades/product.facade';
 
 export const verifyCartProducts = async (req: Request, res: Response, next: NextFunction) => {
 	try {

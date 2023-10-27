@@ -1,6 +1,6 @@
 import {type Request, type Response, type NextFunction} from 'express';
-import Product from '../models/Product';
 import {type ObjectId} from 'mongoose';
+import productFacade from '../facades/product.facade';
 
 export const verifyCartProducts = async (req: Request, res: Response, next: NextFunction) => {
 	try {
@@ -11,9 +11,8 @@ export const verifyCartProducts = async (req: Request, res: Response, next: Next
 		}> = [];
 
 		for (const cartProduct of req.body.cartProducts) {
-			const product = await Product.findById(cartProduct.id);
+			const product = await productFacade.getProductById(cartProduct.id);
 			const quantity = cartProduct.quantity as number;
-			if (!product) return res.status(400).json(`The product whit id ${cartProduct.id} doesnt exist`);
 
 			if (product.stock < quantity) {
 				return res.status(400).json(`Product with ID ${cartProduct.id} is not available in the requested quantity`);
@@ -32,5 +31,25 @@ export const verifyCartProducts = async (req: Request, res: Response, next: Next
 		next();
 	} catch (error) {
 		res.status(500).json({error: 'Error al verificar los productos del carrito'});
+	}
+};
+
+export const verifyStockToAdd = async (req: Request, res: Response, next: NextFunction) => {
+	try {
+		const productId = req.body.product as string;
+		const quantity = req.body.quantity as number;
+		const productStock = (await productFacade.getProductById(productId)).stock;
+
+		if (productStock < quantity) {
+			res.status(400).json('Insufficient stock for demand');
+		}
+
+		next();
+	} catch (error) {
+		if (error instanceof Error) {
+			res.status(400).json(error);
+		} else {
+			res.status(500).json({error: 'Error when trying if there is enough stock'});
+		}
 	}
 };

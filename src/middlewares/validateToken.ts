@@ -38,7 +38,7 @@ export const tokenResetValidation = (req: Request, res: Response, next: NextFunc
 
 		if (!token) throw new Error('token reset validation not found');
 
-		const payload = jwt.verify(token, process.env.TOKEN_SECRET_RESET ?? 'resettokentest') as IPayload;
+		const payload = jwt.verify(token, process.env.TOKEN_SECRET_RESET ?? 'TOKEN_SECRET_RESET') as IPayload;
 
 		req.userId = payload._id;
 
@@ -78,7 +78,11 @@ export const generateNewAccessToken = async (req: Request, res: Response, next: 
 	try {
 		const accessToken = await token.generateAccessToken({_id: req.userId});
 
-		res.cookie('authToken', accessToken)
+		res.cookie('authToken', accessToken, {
+			secure: !(process.env.NODE_ENV === 'dev'), // Solo se envía a través de conexiones HTTPS
+			httpOnly: true, // No es accesible desde JavaScript en el navegador
+			sameSite: 'none',
+		})
 			.json({accessToken});
 	} catch (error) {
 		if (error instanceof Error) {

@@ -105,17 +105,11 @@ export const requestPasswordReset = async (req: Request, res: Response) => {
 		const user = await authFacade.validateuser(req.body.email as string);
 		if (!user) throw new Error('User not found!');
 		// ENVIAR MAIL
-		const token: string = jwt.sign(
-			{_id: user._id as ObjectId},
-			process.env.TOKEN_SECRET_RESET ?? 'resettokentest',
-			{
-				expiresIn: 60 * 60,
-			},
-		);
+		const resetToken: string = await token.generateResetPasswordToken({_id: user._id as ObjectId});
 		// Const verificationLink = `http://localhost:${
 		// 	process.env.PORT ?? '8080'
 		// }/reconfirm_password?reset_token=${token}`;
-		const verificationLink = `${config.FRONT_URL ?? `http://localhost:${process.env.PORT ?? '8080'}`}/reconfirm_password?reset_token=${token}`;
+		const verificationLink = `${config.FRONT_URL ?? `http://localhost:${process.env.PORT ?? '8080'}`}/reconfirm_password?reset_token=${resetToken}`;
 		const data: EmailTemplateData = {
 			nombre: req.body.name as string,
 			url: verificationLink,
@@ -123,8 +117,8 @@ export const requestPasswordReset = async (req: Request, res: Response) => {
 		// Data mail y enviarlo
 		await sendMail(req.body.email as string, 'reset Password', 'resetPassword', data);
 		// Res.status(200).json('Email enviado')
-		res.status(200).json({token, verificationLink});
-		console.log(token, verificationLink);
+		res.status(200).json({resetToken, verificationLink});
+		console.log(resetToken, verificationLink);
 	} catch (error) {
 		res.status(400).json(error);
 	}

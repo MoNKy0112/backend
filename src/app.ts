@@ -11,6 +11,9 @@ import orderRoutes from './routes/order';
 import userRoutes from './routes/user';
 import productRoutes from './routes/product';
 import categoriesRoutes from './routes/category';
+import mercadopagoRoutes from './routes/mercadopago';
+import path from 'path';
+import {url} from 'inspector';
 // Settings
 app.set('port', config.SERVER_PORT || 3000);
 // Midllewares
@@ -19,14 +22,20 @@ app.use(cors({
 	origin: 'https://ti-un-front-vr3s.vercel.app',
 	credentials: true,
 }));
+app.use(express.urlencoded({extended: false}));
 app.use(morgan('dev'));
 app.use(express.json());
+app.use(express.static(path.join(__dirname, '../src/public')));
 app.use(cookieParser());
 
 app.get('/', (req, res) => {
 	res.json({
 		message: 'TiUN Backend😊',
 	});
+});
+
+app.get('/oauthmp', (req, res) => {
+	res.json({body: req.body, code: url});
 });
 
 app.get('/set-cookie', (req, res) => {
@@ -54,4 +63,5 @@ app.use(orderRoutes);
 app.use(userRoutes);
 app.use(productRoutes);
 app.use(categoriesRoutes);
+app.use(mercadopagoRoutes);
 export default app;

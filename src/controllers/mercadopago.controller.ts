@@ -3,7 +3,8 @@
 
 import {type Request, type Response} from 'express';
 import MercadoPagoConfig, {Preference} from 'mercadopago';
-const client = new MercadoPagoConfig({accessToken: 'TEST-4999751880735799-102715-68f114798c57ff6fa5a0c75d88244183-1525915431'});
+// Const client = new MercadoPagoConfig({accessToken: 'TEST-4999751880735799-102715-68f114798c57ff6fa5a0c75d88244183-1525915431'});
+const client = new MercadoPagoConfig({accessToken: 'TEST-4999751880735799-102722-f86edf9771511613a2956599d623f117-1527430192'});
 
 export const create_preference = async (req: Request, res: Response) => {
 	try {
@@ -15,7 +16,7 @@ export const create_preference = async (req: Request, res: Response) => {
 					title: 'producto',
 					quantity: 1,
 					currency_id: 'COP',
-					unit_price: 100,
+					unit_price: 1000,
 				},
 			],
 			back_urls: {
@@ -24,10 +25,11 @@ export const create_preference = async (req: Request, res: Response) => {
 				pending: 'http://localhost:3000/feedback',
 			},
 			auto_return: 'approved',
+			marketplace_fee: 5,
 		}};
 
 		const pref = await preference.create(preferenceData);
-		console.log(pref.id);
+		console.log(pref.marketplace_fee);
 		res.status(200).json(pref.id);
 	} catch (error) {
 		console.log('error #', error);

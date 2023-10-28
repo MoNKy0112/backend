@@ -39,7 +39,7 @@ app.get('/oauthmp', (req, res) => {
 });
 
 app.get('/oauth', (req, res) => {
-	res.json('https://auth.mercadopago.com/authorization?client_id=1525915431&response_type=code&platform_id=mp&state=00001&redirect_uri=vercel.com/…ns-projects-687328a7/oauthmp');
+	res.json('https://auth.mercadopago.com/authorization?client_id=4999751880735799&response_type=code&platform_id=mp&state=000011&redirect_uri=https://backend-y8aq.vercel.app/oauthmp');
 });
 
 app.get('/set-cookie', (req, res) => {

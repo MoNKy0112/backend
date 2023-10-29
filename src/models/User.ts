@@ -9,7 +9,7 @@ type CartProduct = {
 	subtotal: number;
 };
 
-export type Cart = {
+type Cart = {
 	sellerId: ObjectId | string;
 	products: CartProduct[];
 };

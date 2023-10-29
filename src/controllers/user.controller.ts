@@ -76,7 +76,8 @@ class UserController {
 		try {
 			const {userId} = req;
 			const productId = req.body.product as string;
-			const user = await UserFacade.removeOfCart(userId, productId);
+			const quantity = req.body.quantity as number;
+			const user = await UserFacade.removeOfCart(userId, productId, quantity);
 
 			res.json(user).status(200);
 		} catch (error) {

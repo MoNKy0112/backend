@@ -7,11 +7,14 @@ class UserFacade {
 	public async getUsers(): Promise<IUser[]> {
 		try {
 			const users = await User.find();
+			if (!users) throw new Error('usuarios no encontrados');
 			return users;
 		} catch (error) {
-			console.error('Error obteniendo los usuarios:', error);
-			throw new Error('Error al obtener usuarios');
-			// Res.status(500).json({error: 'Error interno del servidor'});
+			if (error instanceof Error) {
+				throw error;
+			} else {
+				throw new Error('Error trying to get users');
+			}
 		}
 	}
 
@@ -21,9 +24,11 @@ class UserFacade {
 			if (!user) throw new Error('usuario no encontrado');
 			return user;
 		} catch (error) {
-			console.error('Error obteniendo al usuario:', error);
-			throw new Error('Error obteniendo al usuario');
-			// Res.status(500).json({error: 'Error interno del servidor'});
+			if (error instanceof Error) {
+				throw error;
+			} else {
+				throw new Error('Unknown error when trying to get the user');
+			}
 		}
 	}
 
@@ -102,12 +107,16 @@ class UserFacade {
 
 			return user;
 		} catch (error) {
-			console.error(error);
-			throw new Error('Error al agregar productos al carrito');
+			if (error instanceof Error) {
+				throw error;
+			} else {
+				console.error(error);
+				throw new Error('Unknown error when trying to add a product to the cart');
+			}
 		}
 	}
 
-	public async removeOfCart(userId: ObjectId | string, productId: ObjectId | string) {
+	public async removeOfCart(userId: ObjectId | string, productId: ObjectId | string, quantity?: number) {
 		try {
 			const user = await this.getUserById(userId);
 			const product = await productFacade.getProductById(productId);
@@ -115,11 +124,19 @@ class UserFacade {
 			// Encuentra el vendedor en el carrito del usuario
 			const cartEntry = user.cart.find(cartEntry => String(cartEntry.sellerId) === String(product.sellerId));
 			// Console.log(user.cart[1].sellerId.toString() === product.sellerId.toString());
-			console.log(cartEntry);
 			if (cartEntry) {
 				// Encuentra el producto en el carrito del vendedor
 				const productIndex = cartEntry.products.findIndex(productCart => String(productCart.productId) === String(product.id));
+				// Si existe el parametro cantidad y es menor a la cantidad existente, remueve solo dicha cantidad
+				if (quantity && quantity < cartEntry.products[productIndex].quantity) {
+					cartEntry.products[productIndex].quantity -= quantity;
+					cartEntry.products[productIndex].subtotal -= quantity * product.price;
 
+					await user.save();
+					return user;
+				}
+
+				// Si no existe el parametro cantidad o es mayor a la cantidad existente, elimina del carrito el producto
 				if (productIndex !== -1) {
 					// Elimina el producto del carrito del vendedor
 					cartEntry.products.splice(productIndex, 1);
@@ -138,10 +155,14 @@ class UserFacade {
 				}
 			}
 
-			throw new Error('producto no encontrado en el carrito');
+			throw new Error('product not found in the cart');
 		} catch (error) {
-			console.error(error);
-			throw new Error('Error desconocido al intentar eliminar un producto del carrito');
+			if (error instanceof Error) {
+				throw error;
+			} else {
+				console.error(error);
+				throw new Error('Unknown error when trying to remove a product from the cart');
+			}
 		}
 	}
 
@@ -160,7 +181,12 @@ class UserFacade {
 			// Console.log(user);
 			return user;
 		} catch (error) {
-			throw new Error('Error al agregar productos favoritos');
+			if (error instanceof Error) {
+				throw error;
+			} else {
+				console.error(error);
+				throw new Error('Unknown error by adding favorite products');
+			}
 		}
 	}
 
@@ -178,7 +204,12 @@ class UserFacade {
 
 			return user;
 		} catch (error) {
-			throw new Error('Error al remover productos favoritos');
+			if (error instanceof Error) {
+				throw error;
+			} else {
+				console.error(error);
+				throw new Error('Unknown error when trying to remove favorite products');
+			}
 		}
 	}
 
@@ -196,8 +227,12 @@ class UserFacade {
 
 			return user;
 		} catch (error) {
-			console.log('error:', error);
-			throw new Error('Error al agregar categorias favoritas');
+			if (error instanceof Error) {
+				throw error;
+			} else {
+				console.log('error:', error);
+				throw new Error('Unknown error when trying to add favorite categories');
+			}
 		}
 	}
 
@@ -210,12 +245,17 @@ class UserFacade {
 			);
 
 			if (!user) {
-				throw new Error('Usuario no encontrado'); // Lanzar un error si no se encuentra el usuario
+				throw new Error('User not found'); // Lanzar un error si no se encuentra el usuario
 			}
 
 			return user;
 		} catch (error) {
-			throw new Error('Error al remover categorias favoritas');
+			if (error instanceof Error) {
+				throw error;
+			} else {
+				console.error(error);
+				throw new Error('Unknown error trying to delete a favorite category');
+			}
 		}
 	}
 
@@ -230,7 +270,12 @@ class UserFacade {
 
 			return deletedUser;
 		} catch (error) {
-			throw new Error('Error trying to delete user');
+			if (error instanceof Error) {
+				throw error;
+			} else {
+				console.error(error);
+				throw new Error('Unknown error trying to delete user');
+			}
 		}
 	}
 }

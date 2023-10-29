@@ -24,7 +24,7 @@ class Jwtoken {
 	}
 
 	public async generateResetPasswordToken(payload: Ipayload, expTime?: string | number): Promise<string> {
-		return this.generate(payload, this.refreshKey, expTime ?? 60 * 60);
+		return this.generate(payload, this.resetKey, expTime ?? 60 * 60);
 	}
 
 	private async generate(payload: JwtPayload, key: string, expiresIn: string | number | undefined): Promise<string> {

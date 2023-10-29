@@ -68,7 +68,7 @@ export const signIn = async (req: Request, res: Response) => {
 
 		const accessToken = await token.generateAccessToken({_id: user._id as ObjectId});
 		const refreshToken = await token.generateRefreshToken({_id: user._id as ObjectId});
-		console.log(!(process.env.NODE_ENV === 'dev'));
+		console.log('mode deploy:', !(process.env.NODE_ENV === 'dev'));
 		res.cookie('authToken', accessToken, {
 			secure: !(process.env.NODE_ENV === 'dev'), // Solo se envía a través de conexiones HTTPS
 			httpOnly: true, // No es accesible desde JavaScript en el navegador

@@ -58,14 +58,9 @@ class UserController {
 		try {
 			const {userId} = req;
 			const productId = req.body.product as string;
-			const quantity = req.body.quantity as number; // Obtén la cantidad desde el cuerpo de la solicitud
+			const quantity = req.body.quantity as number;
 			const user = await UserFacade.addToCart(userId, productId, quantity);
-			const product = (await productFacade.getProductById(productId));
-			const productData = {
-				productImage: product.imageUrl,
-				productName: product.name,
-			};
-			res.json({user, product: productData}).status(200);
+			res.json(user).status(200);
 		} catch (error) {
 			if (error instanceof Error) {
 				console.error('error trying to add products in cart:', error.message);

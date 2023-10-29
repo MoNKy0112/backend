@@ -1,6 +1,7 @@
 import User, {type IUser} from '../models/User';
 import {type UpdateQuery, type ObjectId} from 'mongoose';
 import productFacade from './product.facade';
+import {canAddToCart} from '../utilities/cart';
 
 class UserFacade {
 	public async getUsers(): Promise<IUser[]> {
@@ -54,34 +55,47 @@ class UserFacade {
 			const user = await this.getUserById(userId);
 			const product = await productFacade.getProductById(productId);
 			// Verifica si el vendedor ya existe en el carrito del usuario
-			const existingCart = user.cart.find(cartEntry => cartEntry.sellerId.toString() === product.sellerId.toString());
-			console.log(user.cart.find(c => c.sellerId.toString()));
+			const existingCart = user.cart.find(cartEntry => String(cartEntry.sellerId) === String(product.sellerId));
 			if (existingCart) {
 				// Si el vendedor ya existe, actualiza el producto o agrégalo si no existe
-				const existingProduct = existingCart.products.find(productCart => productCart.productId.toString() === product.id.toString());
+				const existingProduct = existingCart.products.find(productCart => String(productCart.productId) === String(product.id));
 
 				if (existingProduct) {
-					existingProduct.quantity += quantity;
-					existingProduct.subtotal += quantity * product.price; // Asegúrate de obtener el precio del producto
-				} else {
+					if (canAddToCart(product.stock, existingProduct.quantity, quantity)) {
+						// Verifica que haya stock adicional
+						existingProduct.quantity += quantity;
+						existingProduct.subtotal += quantity * product.price; // Asegúrate de obtener el precio del producto
+					} else {
+						throw new Error('There is not enough stock');
+					}
+				} else if (canAddToCart(product.stock, 0, quantity)) {
+					// Verifica que haya stock
 					existingCart.products.push({
 						productId: product.id as ObjectId,
+						productImageUrl: product.imageUrl,
+						productName: product.name,
 						quantity,
 						subtotal: quantity * product.price,
 					});
+				} else {
+					throw new Error('There is not enough stock');
 				}
-			} else {
-				// Si el vendedor no existe, crea una nueva entrada de carrito
+			} else if (canAddToCart(product.stock, 0, quantity)) {
+				// Si el vendedor no existe, crea una nueva entrada de carrito y verifica que haya stock
 				user.cart.push({
 					sellerId: product.sellerId,
 					products: [
 						{
 							productId: product.id as ObjectId,
+							productImageUrl: product.imageUrl,
+							productName: product.name,
 							quantity,
 							subtotal: quantity * product.price,
 						},
 					],
 				});
+			} else {
+				throw new Error('There is not enough stock');
 			}
 
 			await user.save();
@@ -89,7 +103,7 @@ class UserFacade {
 			return user;
 		} catch (error) {
 			console.error(error);
-			throw new Error('Error al agregar productos favoritos');
+			throw new Error('Error al agregar productos al carrito');
 		}
 	}
 
@@ -99,12 +113,12 @@ class UserFacade {
 			const product = await productFacade.getProductById(productId);
 
 			// Encuentra el vendedor en el carrito del usuario
-			const cartEntry = user.cart.find(cartEntry => cartEntry.sellerId.toString() === product.sellerId.toString());
+			const cartEntry = user.cart.find(cartEntry => String(cartEntry.sellerId) === String(product.sellerId));
 			// Console.log(user.cart[1].sellerId.toString() === product.sellerId.toString());
 			console.log(cartEntry);
 			if (cartEntry) {
 				// Encuentra el producto en el carrito del vendedor
-				const productIndex = cartEntry.products.findIndex(productCart => productCart.productId.toString() === product.id.toString());
+				const productIndex = cartEntry.products.findIndex(productCart => String(productCart.productId) === String(product.id));
 
 				if (productIndex !== -1) {
 					// Elimina el producto del carrito del vendedor

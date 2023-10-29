@@ -3,11 +3,13 @@ import bcrypt from 'bcryptjs';
 
 type CartProduct = {
 	productId: ObjectId | string;
+	productName: string;
+	productImageUrl: string;
 	quantity: number;
 	subtotal: number;
 };
 
-type Cart = {
+export type Cart = {
 	sellerId: ObjectId | string;
 	products: CartProduct[];
 };
@@ -91,6 +93,8 @@ const userSchema = new Schema({
 			products: [
 				{
 					productId: {type: Schema.Types.ObjectId, ref: 'Product', required: true},
+					productName: {type: String, required: false},
+					productImageUrl: {type: String, required: false},
 					quantity: {type: Number, required: true},
 					subtotal: {type: Number, required: true},
 				},

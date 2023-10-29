@@ -93,8 +93,8 @@ const userSchema = new Schema({
 			products: [
 				{
 					productId: {type: Schema.Types.ObjectId, ref: 'Product', required: true},
-					productName: {type: String, required: false},
-					productImageUrl: {type: String, required: false},
+					productName: {type: String, required: true},
+					productImageUrl: {type: String, required: true},
 					quantity: {type: Number, required: true},
 					subtotal: {type: Number, required: true},
 				},

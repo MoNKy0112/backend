@@ -1,7 +1,6 @@
 import express from 'express';
 import UserController from '../controllers/user.controller';
 import {tokenValidation} from '../middlewares/validateToken';
-import {verifyStockToAdd} from '../middlewares/verifyCartProducts';
 
 const router = express.Router();
 

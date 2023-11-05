@@ -125,8 +125,5 @@ export const requestPasswordReset = async (req: Request, res: Response) => {
 export const passwordReset = async (req: Request, res: Response) => {
 	const secPassword = await hash(req.body.newpassword as string);
 	const user = await authFacade.updateuser(req.userId, secPassword);
-
-	const newuser = await authFacade.getuser(req.userId);
-	console.log(newuser);
 	res.status(200).json(user);
 };

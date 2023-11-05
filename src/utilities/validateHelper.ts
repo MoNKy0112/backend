@@ -1,13 +1,13 @@
 import {validationResult} from 'express-validator';
 import {type Request, type Response, type NextFunction} from 'express';
-const validateResult = (req: Request, res: Response, next: NextFunction): void => {
-	const errors = validationResult(req);
-	console.log(errors);
-	if (errors.isEmpty()) {
-		next();
+const validateResult = (req: Request, res: Response, next: NextFunction) => {
+	const result = validationResult(req);
+
+	if (!result.isEmpty()) {
+		return res.send({errors: result.array()});
 	}
 
-	res.send({errors: errors.array()});
+	next();
 };
 
 export default validateResult;

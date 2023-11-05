@@ -26,8 +26,8 @@ export type IUser = {
 	createdat: Date;
 	updatedat: Date;
 	imageUrl: string;
-	favoriteCategories: ObjectId[] | string[];
-	favoriteProducts: ObjectId[] | string[];
+	favouriteCategories: ObjectId[] | string[];
+	favouriteProducts: ObjectId[] | string[];
 	cart: Cart[];
 	encryptPassword(password: string): Promise<string>;
 	validatePassword(password: string): Promise<boolean>;
@@ -72,10 +72,10 @@ const userSchema = new Schema({
 		type: String,
 		required: false,
 	},
-	favouriteCategories: {
+	favouriteCategories: [{
 		type: Schema.Types.ObjectId,
-		ref: 'Categories',
-	},
+		ref: 'Category',
+	}],
 	favouriteProducts: [{
 		type: Schema.Types.ObjectId,
 		ref: 'Product',

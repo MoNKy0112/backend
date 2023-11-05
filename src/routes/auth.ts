@@ -1,12 +1,12 @@
 import {Router} from 'express';
 import {signUp, signIn, profile, passwordReset, requestPasswordReset} from '../controllers/auth.controller';
 import {tokenValidation, tokenResetValidation, refreshToken, generateNewAccessToken} from '../middlewares/validateToken';
-
+import validate from '../validators/auth';
 const router: Router = Router();
 
-router.post('/signup', signUp);
+router.post('/signup', validate.validateSignUp, signUp);
 
-router.post('/signin', signIn);
+router.post('/signin', validate.validateSignIn, signIn);
 
 router.use('/profile', tokenValidation);
 

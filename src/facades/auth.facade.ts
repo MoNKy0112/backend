@@ -3,9 +3,20 @@ import User, {type IUser} from '../models/User';
 
 class AuthFacade {
 	public async saveuser(user: IUser) {
-		const newUser = new User(user);
-		const savedUser = await newUser.save();
-		return savedUser;
+		try {
+			const newUser = new User(user);
+			if (!newUser) throw new Error('error al crear usuario');
+			const savedUser = await newUser.save();
+			if (!savedUser) throw new Error('error al guardar usuario');
+			return savedUser;
+		} catch (error) {
+			if (error instanceof Error) {
+				throw error;
+			} else {
+				console.error(error);
+				throw new Error('Unknown error when trying to save user');
+			}
+		}
 	}
 
 	public async validateuser(email: string) {

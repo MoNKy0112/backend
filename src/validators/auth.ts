@@ -75,14 +75,33 @@ class ValidateAuth {
 	];
 
 	public validateResetPassword = [
+		body('email')
+			.exists()
+			.isString()
+			.notEmpty()
+			.isEmail()
+			.custom((value: string) => {
+				if (!value.endsWith('@unal.edu.co')) {
+					throw new Error('El parámetro debe ser una dirección de correo de @unal.edu.co');
+				}
 
+				return true;
+			})
+			.withMessage('El parámetro debe ser una dirección de correo de @unal.edu.co válida'),
+		body('name')
+			.exists()
+			.isString()
+			.notEmpty(),
 		(req: Request, res: Response, next: NextFunction) => {
 			validateResult(req, res, next);
 		},
 	];
 
 	public validateNewPassword = [
-
+		body('newpassword')
+			.exists()
+			.isString()
+			.notEmpty(),
 		(req: Request, res: Response, next: NextFunction) => {
 			validateResult(req, res, next);
 		},

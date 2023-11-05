@@ -12,11 +12,11 @@ router.use('/profile', tokenValidation);
 
 router.get('/profile', profile);
 
-router.post('/resetpassword', requestPasswordReset);
+router.post('/resetpassword', validate.validateResetPassword, requestPasswordReset);
 
 router.use('/newpassword', tokenResetValidation);
 
-router.post('/newpassword', passwordReset);
+router.post('/newpassword', validate.validateNewPassword, passwordReset);
 
 router.use('/newtoken', refreshToken);
 

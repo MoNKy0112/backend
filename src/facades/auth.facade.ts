@@ -1,4 +1,3 @@
-import {type Types, type ObjectId, type UpdateQuery, type QueryOptions} from 'mongoose';
 import User, {type IUser} from '../models/User';
 
 class AuthFacade {
@@ -13,28 +12,52 @@ class AuthFacade {
 			if (error instanceof Error) {
 				throw error;
 			} else {
-				console.error(error);
 				throw new Error('Unknown error when trying to save user');
 			}
 		}
 	}
 
 	public async validateuser(email: string) {
-		const user = await User.findOne({email});
-		return user;
+		try {
+			const user = await User.findOne({email});
+			return user;
+		} catch (error) {
+			if (error instanceof Error) {
+				throw error;
+			} else {
+				throw new Error('Unknown error when trying to validate user');
+			}
+		}
 	}
 
 	public async getuser(userId: string) {
-		const user = User.findById(userId);
-		return user;
+		try {
+			const user = await User.findById(userId);
+			return user;
+		} catch (error) {
+			if (error instanceof Error) {
+				throw error;
+			} else {
+				throw new Error('Unknown error when trying to get user');
+			}
+		}
 	}
 
 	public async updateuser(userId: string, secPassword: string) {
-		await User.updateOne(
-			{_id: userId},
-			{$set: {password: secPassword}},
-			{new: true},
-		);
+		try {
+			const user = await User.updateOne(
+				{_id: userId},
+				{$set: {password: secPassword}},
+				{new: true},
+			);
+			return user;
+		} catch (error) {
+			if (error instanceof Error) {
+				throw error;
+			} else {
+				throw new Error('Unknown error when trying to update user');
+			}
+		}
 	}
 }
 

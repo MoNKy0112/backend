@@ -1,17 +1,28 @@
 import {type Request, type Response} from 'express';
-import ProductFacade, {InterfaceProductFilters} from '../facades/product.facade';
+import ProductFacade, {type InterfaceProductFilters} from '../facades/product.facade';
 import moment from 'moment-timezone';
+import {type IProduct} from 'models/Product';
+import {Date, type UpdateQuery} from 'mongoose';
 
 moment.tz.setDefault('America/Bogota');
 
 export const createProduct = async (req: Request, res: Response) => {
 	try {
-		const productData = req.body;
+		const productData: IProduct = {
+			name: req.body.name as string,
+			sellerId: req.userId,
+			categories: req.body.categories as string[],
+			description: req.body.description as string,
+			price: req.body.price as number,
+			imageUrl: req.body.imageUrl as string,
+			stock: req.body.stock as number,
+			discount: req.body.discount as number,
+			solds: 0,
+			createdat: new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000)),
+			updatedat: new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000)),
+		};
 		console.log(productData);
-		productData.sellerId = req.userId;
 		console.log(productData.sellerId);
-		productData.createdat = new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000));
-		productData.updatedat = new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000));
 		const savedProduct = await ProductFacade.createProduct(productData); // Llama a la fachada para crear el producto
 		return res.status(201).json(savedProduct);
 	} catch (error) {
@@ -77,8 +88,17 @@ export const getProductsByFilters = async (req: Request, res: Response) => {
 export const updateProduct = async (req: Request, res: Response) => {
 	try {
 		const {productId} = req.params;
-		const productData = req.body;
-		productData.updatedat = new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000));
+		const productData: Partial<IProduct> = {
+			name: req.body.name as string,
+			categories: req.body.categories as string[],
+			description: req.body.description as string,
+			price: req.body.price as number,
+			imageUrl: req.body.imageUrl as string,
+			stock: req.body.stock as number,
+			discount: req.body.discount as number,
+
+			updatedat: new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000)),
+		};
 		const updatedProduct = await ProductFacade.updateProduct(productId, productData); // Llama a la fachada para actualizar el producto
 		if (!updatedProduct) {
 			return res.status(404).json({error: 'Producto no encontrado'});

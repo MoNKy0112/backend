@@ -4,7 +4,6 @@ import User, {type IUser} from '../models/User';
 import authFacade from '../facades/auth.facade';
 import {hash} from '../utilities/hash';
 
-import jwt from 'jsonwebtoken';
 import {type ObjectId} from 'mongoose';
 import token from '../utilities/token';
 import config from '../config';

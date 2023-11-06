@@ -1,18 +1,18 @@
-import {Schema, model, type Document, Types, type Date, now} from 'mongoose';
+import {Schema, model, type Document} from 'mongoose';
 
 export type IProduct = {
-	sellerId: Schema.Types.ObjectId;
+	sellerId: Schema.Types.ObjectId | string;
 	name: string;
 	description: string;
 	price: number;
 	imageUrl: string;
-	categories: Schema.Types.ObjectId[];
+	categories: Schema.Types.ObjectId[] | string[];
 	stock: number;
 	discount: number;
 	solds: number;
 	createdat: Date;
 	updatedat: Date;
-} & Document;
+};
 
 const productSchema = new Schema({
 	sellerId: {
@@ -64,13 +64,13 @@ const productSchema = new Schema({
 		default: 0,
 	},
 	createdat: {
-		type: Date,
+		type: Schema.Types.Date,
 		require: true,
 	},
 	updatedat: {
-		type: Date,
+		type: Schema.Types.Date,
 		require: true,
 	},
 });
 
-export default model<IProduct>('Product', productSchema);
+export default model<IProduct & Document>('Product', productSchema);

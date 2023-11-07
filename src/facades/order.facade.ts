@@ -22,27 +22,19 @@ export type InterfaceOrderFilters = {
 	orderStatus?: string[] ; // Lista de estados de orden
 };
 class OrderFacade {
-	async createOrder(data: any): Promise<IOrder> {
+	async createOrder(order: IOrder): Promise<IOrder> {
 		try {
-			const order: IOrder = new Order({
-				userId: data.userId as ObjectId,
-				sellerId: data.sellerId as ObjectId,
-				products: data.products as Array<{
-					productId: ObjectId;
-					quantity: number;
-					subtotal: number;
-				}>,
-				totalAmount: data.totalAmount as number,
-				status: data.status as string,
-			});
-			try {
-				const savedOrder = await order.save();
-				return savedOrder;
-			} catch (error) {
-				throw new Error();
-			}
+			const newOrder = new Order(order);
+			if (!newOrder) throw new Error('Error trying to create order');
+			const savedOrder = await newOrder.save();
+			if (!savedOrder) throw new Error('Error trying to keep order');
+			return savedOrder;
 		} catch (error) {
-			throw new Error('Error al crear la orden');
+			if (error instanceof Error) {
+				throw error;
+			} else {
+				throw new Error('Unknown error when trying to create the order');
+			}
 		}
 	}
 

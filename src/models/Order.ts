@@ -1,4 +1,4 @@
-import {Schema, Types, model, type Document, type Date, type ObjectId} from 'mongoose';
+import {Schema, Types, model, type Document, type ObjectId} from 'mongoose';
 
 export type IOrder = {
 	userId: ObjectId | string;
@@ -10,7 +10,7 @@ export type IOrder = {
 	}>;
 	totalAmount: number;
 	status: string;
-	date: Schema.Types.Date;
+	date: Date;
 };
 
 const orderSchema = new Schema({

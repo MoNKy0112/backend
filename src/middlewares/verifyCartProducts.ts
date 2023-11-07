@@ -1,8 +1,8 @@
 import {type Request, type Response, type NextFunction} from 'express';
 import {type ObjectId} from 'mongoose';
 import productFacade from '../facades/product.facade';
-import authFacade from 'facades/auth.facade';
-import {type IProduct} from 'models/Product';
+import authFacade from '../facades/auth.facade';
+import {type IProduct} from '../models/Product';
 
 export const verifyCartProducts = async (req: Request, res: Response, next: NextFunction) => {
 	try {
@@ -40,7 +40,7 @@ export const verifyCartProducts = async (req: Request, res: Response, next: Next
 			const product = resolvedProducts[i];
 			const {cartProduct} = products[i];
 			const {quantity} = cartProduct;
-
+			console.log(product);
 			if (product.stock < quantity) {
 				return res.status(400).json(`Product with ID ${String(cartProduct.productId)} 
 				& name ${String(product.name)} is not available in the requested quantity`);

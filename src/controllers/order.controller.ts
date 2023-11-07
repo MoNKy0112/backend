@@ -2,8 +2,8 @@ import {type ObjectId, Types, type UpdateQuery} from 'mongoose';
 import orderFacade, {type InterfaceOrderFilters} from '../facades/order.facade';
 import {type Request, type Response} from 'express';
 import Product from '../models/Product';
-import {type IOrder} from 'models/Order';
-import authFacade from 'facades/auth.facade';
+import {type IOrder} from '../models/Order';
+import authFacade from '../facades/auth.facade';
 
 export const createNewOrder = async (req: Request, res: Response) => {
 	try {
@@ -17,6 +17,7 @@ export const createNewOrder = async (req: Request, res: Response) => {
 		if (!user) throw new Error('error');
 
 		for (const product of req.body.verifiedProducts) {
+			console.log('aqui', product.stock);
 			await Product.findByIdAndUpdate(product.productId, {$inc: {stock: -product.quantity}});
 		}
 

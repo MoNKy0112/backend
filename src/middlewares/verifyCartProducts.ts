@@ -40,7 +40,6 @@ export const verifyCartProducts = async (req: Request, res: Response, next: Next
 			const product = resolvedProducts[i];
 			const {cartProduct} = products[i];
 			const {quantity} = cartProduct;
-			console.log(product);
 			if (product.stock < quantity) {
 				return res.status(400).json(`Product with ID ${String(cartProduct.productId)} 
 				& name ${String(product.name)} is not available in the requested quantity`);

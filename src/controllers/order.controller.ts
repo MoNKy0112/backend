@@ -1,9 +1,10 @@
-import {type ObjectId, Types, type UpdateQuery} from 'mongoose';
+import {type ObjectId, Types, type UpdateQuery, type Schema} from 'mongoose';
 import orderFacade, {type InterfaceOrderFilters} from '../facades/order.facade';
 import {type Request, type Response} from 'express';
-import Product from '../models/Product';
 import {type IOrder} from '../models/Order';
 import authFacade from '../facades/auth.facade';
+import productFacade from '../facades/product.facade';
+import userFacade from '../facades/user.facade';
 
 export const createNewOrder = async (req: Request, res: Response) => {
 	try {
@@ -15,32 +16,44 @@ export const createNewOrder = async (req: Request, res: Response) => {
 		// if (!seller) return res.status(400).json('Seller not exists');
 		const user = await authFacade.getuser(req.userId);
 		if (!user) throw new Error('error');
+		const allProducts: Array<{productId: string | Schema.Types.ObjectId; quantity: number}> = [];
+		const orders = user.cart.map(async cart => {
+			const {products, sellerId} = cart;
+			const productIds = products.map(product => {
+				const {productId, quantity} = product;
+				return {productId, quantity};
+			});
+			allProducts.push(...productIds);
 
-		for (const product of req.body.verifiedProducts) {
-			console.log('aqui', product.stock);
-			await Product.findByIdAndUpdate(product.productId, {$inc: {stock: -product.quantity}});
-		}
+			const total = products.reduce((accumulator, cartProduct) => accumulator + cartProduct.subtotal, 0);
+			const order: IOrder = {
+				userId: user._id as string,
+				sellerId,
+				products,
+				status: 'En proceso',
+				date: new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000)),
+				totalAmount: total,
+			};
+			return order;
+		});
 
-		const orderData: IOrder = {
-			userId: req.userId,
-			sellerId: req.body.sellerId as string,
-			products: req.body.verifiedProducts as Array<{
-				productId: string;
-				quantity: number;
-				subtotal: number;
-			}>,
-			totalAmount: req.body.totalAmount as number,
-			status: 'inProccess' as string,
-			date: new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000)),
-		};
-		const newOrder = await orderFacade.createOrder(orderData);
-		res.status(201).json(newOrder);
+		const newOrders = await Promise.all(orders.map(async order => {
+			const newOrder = await orderFacade.createOrder(await order);
+			return newOrder;
+		}));
+
+		const userWhitoutCart = await userFacade.emptyCart(user._id as string);
+
+		await Promise.all(allProducts.map(async product => {
+			const updatedProduct = await productFacade.reduceStock(product.productId, product.quantity);
+			return updatedProduct;
+		}));
+
+		res.status(201).json({newOrders, userWhitoutCart});
 	} catch (error) {
 		if (error instanceof Error) {
-			console.error('error trying to create a new order:', error.message);
 			res.status(400).json(error);
 		} else {
-			console.error('Unknown error trying to create a new order:', error);
 			res.status(500).json('Unknown error trying to create a new order');
 		}
 	}

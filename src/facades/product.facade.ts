@@ -53,9 +53,23 @@ class ProductFacade {
 		return products;
 	}
 
-	async updateProduct(productId: string, productData: IProduct) {
+	async updateProduct(productId: string, productData: Partial<IProduct>) {
 		const updatedProduct = await ProductModel.findByIdAndUpdate(productId, productData, {new: true});
 		return updatedProduct;
+	}
+
+	async reduceStock(productId: string | ObjectId, quantity: number) {
+		try {
+			const updatedProduct = await ProductModel.findByIdAndUpdate(productId, {$inc: {stock: -quantity}}, {new: true});
+			if (!updatedProduct) throw new Error('Error trying to reduce stock');
+			return updatedProduct;
+		} catch (error) {
+			if (error instanceof Error) {
+				throw error;
+			} else {
+				throw new Error('Unknown error when trying to reduce stock');
+			}
+		}
 	}
 
 	async deleteProduct(productId: string) {

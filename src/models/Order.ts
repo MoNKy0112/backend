@@ -10,7 +10,7 @@ export type IOrder = {
 	}>;
 	totalAmount: number;
 	status: string;
-	date: Date;
+	date: Schema.Types.Date;
 };
 
 const orderSchema = new Schema({

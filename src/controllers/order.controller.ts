@@ -1,7 +1,6 @@
 import {type ObjectId, Types, type UpdateQuery} from 'mongoose';
 import orderFacade, {type InterfaceOrderFilters} from '../facades/order.facade';
 import {type Request, type Response} from 'express';
-import User from '../models/User';
 import Product from '../models/Product';
 import {type IOrder} from 'models/Order';
 import authFacade from 'facades/auth.facade';
@@ -38,6 +37,7 @@ export const createNewOrder = async (req: Request, res: Response) => {
 	} catch (error) {
 		if (error instanceof Error) {
 			console.error('error trying to create a new order:', error.message);
+			res.status(400).json(error);
 		} else {
 			console.error('Unknown error trying to create a new order:', error);
 			res.status(500).json('Unknown error trying to create a new order');

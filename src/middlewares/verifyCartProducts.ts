@@ -1,6 +1,8 @@
 import {type Request, type Response, type NextFunction} from 'express';
 import {type ObjectId} from 'mongoose';
 import productFacade from '../facades/product.facade';
+import authFacade from 'facades/auth.facade';
+import {type IProduct} from 'models/Product';
 
 export const verifyCartProducts = async (req: Request, res: Response, next: NextFunction) => {
 	try {
@@ -9,13 +11,39 @@ export const verifyCartProducts = async (req: Request, res: Response, next: Next
 			quantity: number;
 			subtotal: number;
 		}> = [];
+		const user = await authFacade.getuser(req.userId);
+		if (!user) throw new Error('error');
+		const results = [];
+		for (const cart of user.cart) {
+			const {products} = cart;
+			for (const cartProduct of products) {
+				results.push({cartProduct, product: productFacade.getProductById(cartProduct.productId)});
+			}
+		}
 
-		for (const cartProduct of req.body.cartProducts) {
-			const product = await productFacade.getProductById(cartProduct.id);
-			const quantity = cartProduct.quantity as number;
+		const products = await Promise.all(results);
+		if (!products) throw new Error('');
+
+		const productPromises = products.map(async p => {
+			const {product} = p;
+
+			if (product instanceof Promise) {
+				return product;
+			}
+
+			return product as IProduct;
+		});
+
+		const resolvedProducts = await Promise.all(productPromises);
+
+		for (let i = 0; i < resolvedProducts.length; i++) {
+			const product = resolvedProducts[i];
+			const {cartProduct} = products[i];
+			const {quantity} = cartProduct;
 
 			if (product.stock < quantity) {
-				return res.status(400).json(`Product with ID ${cartProduct.id} is not available in the requested quantity`);
+				return res.status(400).json(`Product with ID ${String(cartProduct.productId)} 
+				& name ${String(product.name)} is not available in the requested quantity`);
 			}
 
 			const price = (product.price - (product.price * product.discount));

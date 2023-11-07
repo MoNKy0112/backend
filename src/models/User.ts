@@ -2,6 +2,7 @@ import {Schema, model, type Document, type ObjectId} from 'mongoose';
 import bcrypt from 'bcryptjs';
 
 type CartProduct = {
+	id(id: any): unknown;
 	productId: ObjectId | string;
 	productName: string;
 	productImageUrl: string;

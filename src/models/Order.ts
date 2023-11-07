@@ -1,17 +1,17 @@
 import {Schema, Types, model, type Document, type Date, type ObjectId} from 'mongoose';
 
 export type IOrder = {
-	userId: ObjectId;
-	sellerId: ObjectId;
+	userId: ObjectId | string;
+	sellerId: ObjectId | string;
 	products: Array<{
-		productId: ObjectId;
+		productId: ObjectId | string;
 		quantity: number;
 		subtotal: number;
 	}>;
 	totalAmount: number;
 	status: string;
 	date: Date;
-} & Document;
+};
 
 const orderSchema = new Schema({
 	userId: {
@@ -41,10 +41,10 @@ const orderSchema = new Schema({
 		required: true,
 	},
 	date: {
-		type: Date,
+		type: Schema.Types.Date,
 		required: true,
 		default: Date.now,
 	},
 });
 
-export default model<IOrder>('Order', orderSchema);
+export default model<IOrder & Document>('Order', orderSchema);

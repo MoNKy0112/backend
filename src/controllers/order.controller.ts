@@ -4,29 +4,34 @@ import {type Request, type Response} from 'express';
 import User from '../models/User';
 import Product from '../models/Product';
 import {type IOrder} from 'models/Order';
+import authFacade from 'facades/auth.facade';
 
 export const createNewOrder = async (req: Request, res: Response) => {
 	try {
 		// Manejo de errores de Ids
 		// TODO: 'crear middlewares para verificar cada objeto'
-		const user = await User.findById(req.body.userId);
-		if (!user) return res.status(400).json('User not exists');
-		const seller = await User.findById(req.body.sellerId);
-		if (!seller) return res.status(400).json('Seller not exists');
+		// const user = await User.findById(req.body.userId);
+		// if (!user) return res.status(400).json('User not exists');
+		// const seller = await User.findById(req.body.sellerId);
+		// if (!seller) return res.status(400).json('Seller not exists');
+		const user = await authFacade.getuser(req.userId);
+		if (!user) throw new Error('error');
+
 		for (const product of req.body.verifiedProducts) {
 			await Product.findByIdAndUpdate(product.productId, {$inc: {stock: -product.quantity}});
 		}
 
-		const orderData = {
-			userId: user._id as Types.ObjectId,
-			sellerId: seller._id as Types.ObjectId,
+		const orderData: IOrder = {
+			userId: req.userId,
+			sellerId: req.body.sellerId as string,
 			products: req.body.verifiedProducts as Array<{
-				productId: Types.ObjectId;
+				productId: string;
 				quantity: number;
 				subtotal: number;
 			}>,
 			totalAmount: req.body.totalAmount as number,
 			status: 'inProccess' as string,
+			date: new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000)),
 		};
 		const newOrder = await orderFacade.createOrder(orderData);
 		res.status(201).json(newOrder);

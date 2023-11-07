@@ -5,6 +5,8 @@ import {tokenValidation} from '../middlewares/validateToken';
 
 const router: Router = Router();
 
+router.use('/orders', tokenValidation);
+router.get('/orders', getOrders);
 router.get('/orders/:orderId', getOrderById);
-router.post('/createorder', tokenValidation, verifyCartProducts, createNewOrder);
+router.post('/orders/createorder', verifyCartProducts, createNewOrder);
 export default router;

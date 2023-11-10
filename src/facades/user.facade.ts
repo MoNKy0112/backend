@@ -54,6 +54,23 @@ class UserFacade {
 		}
 	}
 
+	public async emptyCart(userId: ObjectId | string) {
+		try {
+			const updateData: Partial<IUser> = {
+				cart: [],
+			};
+			const user = await User.findByIdAndUpdate(userId, updateData, {new: true});
+			if (!user) throw new Error('error al eliminar carrito');
+			return user;
+		} catch (error) {
+			if (error instanceof Error) {
+				throw error;
+			} else {
+				throw new Error('error al eliminar carrito');
+			}
+		}
+	}
+
 	public async addToCart(userId: ObjectId | string, productId: ObjectId | string, quantity: number) {
 		try {
 			if (!quantity)quantity = 1;

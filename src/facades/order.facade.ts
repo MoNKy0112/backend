@@ -1,6 +1,6 @@
-import {type Types, type ObjectId, type UpdateQuery} from 'mongoose';
+import mongoose, {Types, type ObjectId, Mongoose} from 'mongoose';
 import Order, {type IOrder} from '../models/Order';
-import {type QueryOptions} from 'mongoose';
+import {type FilterQuery} from 'mongoose';
 
 // Export type IOrderFilters = {
 // 	userId?: Types.ObjectId;
@@ -12,46 +12,43 @@ import {type QueryOptions} from 'mongoose';
 // };
 
 export type InterfaceOrderFilters = {
-	userId?: Types.ObjectId;
-	sellerId?: Types.ObjectId;
+	userId?: Types.ObjectId | string;
+	sellerId?: Types.ObjectId | string;
 	status?: string;
-	includeProducts?: string[]; // Lista de IDs de productos a incluir
-	excludeProducts?: string[]; // Lista de IDs de productos a excluir
+	includeProducts?: Types.ObjectId[] | string[]; // Lista de IDs de productos a incluir
+	excludeProducts?: Types.ObjectId[] | string[]; // Lista de IDs de productos a excluir
 	startDate?: string; // Fecha de inicio
 	startDateOperator?: string; // Operador de fecha (opcional)
 	orderStatus?: string[] ; // Lista de estados de orden
 };
 class OrderFacade {
-	async createOrder(data: any): Promise<IOrder> {
+	async createOrder(order: IOrder): Promise<IOrder> {
 		try {
-			const order: IOrder = new Order({
-				userId: data.userId as ObjectId,
-				sellerId: data.sellerId as ObjectId,
-				products: data.products as Array<{
-					productId: ObjectId;
-					quantity: number;
-					subtotal: number;
-				}>,
-				totalAmount: data.totalAmount as number,
-				status: data.status as string,
-			});
-			try {
-				const savedOrder = await order.save();
-				return savedOrder;
-			} catch (error) {
-				throw new Error();
-			}
+			const newOrder = new Order(order);
+			if (!newOrder) throw new Error('Error trying to create order');
+			const savedOrder = await newOrder.save();
+			if (!savedOrder) throw new Error('Error trying to keep order');
+			return savedOrder;
 		} catch (error) {
-			throw new Error('Error al crear la orden');
+			if (error instanceof Error) {
+				throw error;
+			} else {
+				throw new Error('Unknown error when trying to create the order');
+			}
 		}
 	}
 
 	async getOrderById(orderId: ObjectId | string) {
 		try {
 			const order = await Order.findById(orderId);
+			if (!order) throw new Error('error when trying to obtain an order');
 			return order;
 		} catch (error) {
-			throw new Error('Error al obtener la orden por ID');
+			if (error instanceof Error) {
+				throw error;
+			} else {
+				throw new Error('Error al obtener la orden por ID');
+			}
 		}
 	}
 
@@ -66,21 +63,39 @@ class OrderFacade {
 
 	async getFilteredOrders(userId: ObjectId | string, userType: string, filters: InterfaceOrderFilters = {}) {
 		try {
-			let query: QueryOptions<InterfaceOrderFilters> = {};
+			let query: FilterQuery<IOrder> = {};
 
-			if (userType === 'Seller') {
+			if (userType === 'seller') {
 				query = {sellerId: userId};
-			} else if (userType === 'Buyer') {
-				query = {userId};
+			} else if (userType === 'buyer') {
+				query.userId = (typeof (userId) === 'string') ? new Types.ObjectId(userId) : userId;
+			} else {
+				throw new Error('userType not declarated');
 			}
 
 			// Filtro de productos específicos o excluyentes.
-			if (filters.includeProducts && filters.includeProducts.length > 0) {
-				query.productIds = {$in: filters.includeProducts};
+			if (filters.includeProducts) {
+				const includeProducts = Array.isArray(filters.includeProducts)
+					? filters.includeProducts.map(s => new Types.ObjectId(s)) : [new Types.ObjectId(filters.includeProducts)];
+				console.log(includeProducts);
+				query['products.productId'] = {
+					// $all interseccion
+					$all: includeProducts,
+					// $in union
+					// $in: includeProducts,
+					// ProductId: {$in: includeProducts},
+				};
 			}
 
-			if (filters.excludeProducts && filters.excludeProducts.length > 0) {
-				query.productIds = {$nin: filters.excludeProducts};
+			if (filters.excludeProducts) {
+				const excludeProducts = Array.isArray(filters.excludeProducts) ? filters.excludeProducts.map(s => new Types.ObjectId(s)) : [new Types.ObjectId(filters.excludeProducts)];
+				query.products = {
+					$not: {
+						$elemMatch: {
+							productId: {$in: excludeProducts},
+						},
+					},
+				};
 			}
 
 			// Filtro de fechas (mayor, menor o igual).
@@ -90,37 +105,47 @@ class OrderFacade {
 			}
 
 			// Filtro por estado de la orden.
-			if (filters.orderStatus && filters.orderStatus.length > 0) {
-				query.status = {$in: filters.orderStatus};
+			if (filters.orderStatus) {
+				const status = Array.isArray(filters.orderStatus) ? filters.orderStatus : [filters.orderStatus];
+				query.status = {$in: status};
 			}
 
+			console.log(query);
 			const pipeline = [
 				{
 					$match: query,
 				},
 				{
 					$project: {
+						userId: 1,
 						_id: 1,
-						orderDate: 1,
+						date: 1,
 						status: 1,
-						productIds: 1,
+						products: 1,
 					},
 				},
 			];
-
+			console.log(pipeline);
 			// Puedes agregar más etapas al pipeline según las necesidades.
 
 			// Ejecutar la consulta de agregación con el pipeline construido.
-			const cursor = Order.aggregate<IOrder>(pipeline);
-			const orders = cursor.exec();
+			const cursor = Order.aggregate(pipeline);
+			const orders = await cursor.exec();
+			// For (const order of orders) {
+			// 	console.log(order.userId);
+			// }
 
-			return await orders;
+			return {orders};
 		} catch (error) {
-			return error;
+			if (error instanceof Error) {
+				throw error;
+			} else {
+				throw new Error('Unknown error when obtaining user orders');
+			}
 		}
 	}
 
-	public async updateOrder(orderId: ObjectId | string, newData: UpdateQuery<IOrder>) {
+	public async updateOrder(orderId: ObjectId | string, newData: Partial<IOrder>) {
 		try {
 			const order = await Order.findByIdAndUpdate(orderId, newData, {new: true});
 			return order;

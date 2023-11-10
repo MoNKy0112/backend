@@ -13,7 +13,6 @@ export const verifyCartProducts = async (req: Request, res: Response, next: Next
 		for (const cartProduct of req.body.cartProducts) {
 			const product = await productFacade.getProductById(cartProduct.id);
 			const quantity = cartProduct.quantity as number;
-
 			if (product.stock < quantity) {
 				return res.status(400).json(`Product with ID ${cartProduct.id} is not available in the requested quantity`);
 			}
@@ -34,6 +33,7 @@ export const verifyCartProducts = async (req: Request, res: Response, next: Next
 	}
 };
 
+// TODO: revisar middleware ya no utilizado
 export const verifyStockToAdd = async (req: Request, res: Response, next: NextFunction) => {
 	try {
 		const productId = req.body.product as string;

@@ -1,22 +1,22 @@
 import {Router} from 'express';
 import {signUp, signIn, profile, passwordReset, requestPasswordReset} from '../controllers/auth.controller';
 import {tokenValidation, tokenResetValidation, refreshToken, generateNewAccessToken} from '../middlewares/validateToken';
-
+import validate from '../validators/auth';
 const router: Router = Router();
 
-router.post('/signup', signUp);
+router.post('/signup', validate.validateSignUp, signUp);
 
-router.post('/signin', signIn);
+router.post('/signin', validate.validateSignIn, signIn);
 
 router.use('/profile', tokenValidation);
 
 router.get('/profile', profile);
 
-router.post('/resetpassword', requestPasswordReset);
+router.post('/resetpassword', validate.validateResetPassword, requestPasswordReset);
 
 router.use('/newpassword', tokenResetValidation);
 
-router.post('/newpassword', passwordReset);
+router.post('/newpassword', validate.validateNewPassword, passwordReset);
 
 router.use('/newtoken', refreshToken);
 

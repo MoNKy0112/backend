@@ -3,7 +3,7 @@ import {Schema, model, type Document} from 'mongoose';
 export type ICategory = {
 	name: string;
 	description: string;
-} & Document;
+};
 
 const categorySchema = new Schema({
 	name: {
@@ -16,4 +16,4 @@ const categorySchema = new Schema({
 	},
 });
 
-export default model<ICategory>('Category', categorySchema);
+export default model<ICategory & Document>('Category', categorySchema);

@@ -1,20 +1,20 @@
 import express from 'express';
 import UserController from '../controllers/user.controller';
 import {tokenValidation} from '../middlewares/validateToken';
-import {verifyStockToAdd} from '../middlewares/verifyCartProducts';
+import validate from '../validators/user';
 
 const router = express.Router();
 
 router.get('/users', UserController.getUsers);
-router.get('/user/:id', UserController.getUserById);
-router.put('/users/:cedula', UserController.updateUser);
+router.get('/user/:id', validate.validateGetById, UserController.getUserById);
+router.put('/users/:cedula', validate.validateUpdate, UserController.updateUser);
 router.delete('/users/:cedula', UserController.deleteUser);
 
 router.use('/user', tokenValidation);
-router.put('/user/cart/add', verifyStockToAdd, UserController.addToCart);
-router.put('/user/cart/remove', UserController.removeOfCart);
-router.put('/user/favprod/add', UserController.addFavoriteProducts);
-router.put('/user/favprod/remove', UserController.removeFavoriteProducts);
-router.put('/user/favcateg/add', UserController.addFavoriteCategories);
-router.put('/user/favcateg/remove', UserController.removeFavoriteCategories);
+router.put('/user/cart/add', validate.validateAddCart, UserController.addToCart);
+router.put('/user/cart/remove', validate.validateRemoveCart, UserController.removeOfCart);
+router.put('/user/favprod/add', validate.validateAddProd, UserController.addFavoriteProducts);
+router.put('/user/favprod/remove', validate.validateRemoveProd, UserController.removeFavoriteProducts);
+router.put('/user/favcateg/add', validate.validateAddCat, UserController.addFavoriteCategories);
+router.put('/user/favcateg/remove', validate.validateRemoveCat, UserController.removeFavoriteCategories);
 export default router;

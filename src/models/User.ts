@@ -3,6 +3,8 @@ import bcrypt from 'bcryptjs';
 
 type CartProduct = {
 	productId: ObjectId | string;
+	productName: string;
+	productImageUrl: string;
 	quantity: number;
 	subtotal: number;
 };
@@ -24,8 +26,8 @@ export type IUser = {
 	createdat: Date;
 	updatedat: Date;
 	imageUrl: string;
-	favoriteCategories: ObjectId[] | string[];
-	favoriteProducts: ObjectId[] | string[];
+	favouriteCategories: ObjectId[] | string[];
+	favouriteProducts: ObjectId[] | string[];
 	cart: Cart[];
 	encryptPassword(password: string): Promise<string>;
 	validatePassword(password: string): Promise<boolean>;
@@ -70,10 +72,10 @@ const userSchema = new Schema({
 		type: String,
 		required: false,
 	},
-	favouriteCategories: {
+	favouriteCategories: [{
 		type: Schema.Types.ObjectId,
-		ref: 'Categories',
-	},
+		ref: 'Category',
+	}],
 	favouriteProducts: [{
 		type: Schema.Types.ObjectId,
 		ref: 'Product',
@@ -91,6 +93,8 @@ const userSchema = new Schema({
 			products: [
 				{
 					productId: {type: Schema.Types.ObjectId, ref: 'Product', required: true},
+					productName: {type: String, required: true},
+					productImageUrl: {type: String, required: true},
 					quantity: {type: Number, required: true},
 					subtotal: {type: Number, required: true},
 				},

@@ -7,10 +7,12 @@ type Ipayload = {
 class Jwtoken {
 	private readonly accessKey: string;
 	private readonly refreshKey: string;
+	private readonly resetKey: string;
 
 	constructor() {
 		this.accessKey = process.env.TOKEN_SECRET ?? 'TOKEN_SECRET';
 		this.refreshKey = process.env.REFRESH_TOKEN_SECRET ?? 'REFRESH_TOKEN_SECRET';
+		this.resetKey = process.env.TOKEN_SECRET_RESET ?? 'TOKEN_SECRET_RESET';
 	}
 
 	public async generateAccessToken(payload: Ipayload, expTime?: string | number): Promise<string> {
@@ -18,7 +20,11 @@ class Jwtoken {
 	}
 
 	public async generateRefreshToken(payload: Ipayload, expTime?: string | number): Promise<string> {
-		return this.generate(payload, this.refreshKey, expTime ?? 60 * 60 * 24 * 7);
+		return this.generate(payload, this.refreshKey, expTime ?? 60 * 60 * 24 * 30);
+	}
+
+	public async generateResetPasswordToken(payload: Ipayload, expTime?: string | number): Promise<string> {
+		return this.generate(payload, this.resetKey, expTime ?? 60 * 60);
 	}
 
 	private async generate(payload: JwtPayload, key: string, expiresIn: string | number | undefined): Promise<string> {

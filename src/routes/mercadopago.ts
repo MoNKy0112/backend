@@ -1,5 +1,5 @@
 import {Router} from 'express';
-import {create_preference} from '../controllers/mercadopago.controller';
+import {create_preference, getPreference, getPaymentMethods, createPayment} from '../controllers/mercadopago.controller';
 import path from 'path';
 const router: Router = Router();
 
@@ -13,6 +13,9 @@ router.get('/feedback', (req, res) => {
 	});
 });
 
+router.get('/getpref', getPreference);
+router.get('/methods', getPaymentMethods);
+router.get('/pay', createPayment);
 router.get('/mpago', (req, res) => {
 	const srcPath = path.resolve(__dirname, '..', 'public', 'mercadopago.html');
 	res.status(200).sendFile(srcPath);

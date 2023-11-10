@@ -31,7 +31,7 @@ export const verifyCartProducts = async (req: Request, res: Response, next: Next
 				return product;
 			}
 
-			return product as IProduct;
+			return product;
 		});
 
 		const resolvedProducts = await Promise.all(productPromises);
@@ -48,7 +48,8 @@ export const verifyCartProducts = async (req: Request, res: Response, next: Next
 			const price = (product.price - (product.price * product.discount));
 
 			productGroup.push({
-				productId: product._id as ObjectId,
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+				productId: product.id,
 				quantity,
 				subtotal: price * quantity,
 			});

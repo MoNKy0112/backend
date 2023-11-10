@@ -71,7 +71,7 @@ class UserFacade {
 		}
 	}
 
-	public async addToCart(userId: ObjectId | string, productId: ObjectId | string, quantity: number) {
+	public async addToCart(userId: ObjectId | string, productId: string | ObjectId, quantity: number) {
 		try {
 			if (!quantity)quantity = 1;
 			const user = await this.getUserById(userId);
@@ -80,7 +80,7 @@ class UserFacade {
 			const existingCart = user.cart.find(cartEntry => String(cartEntry.sellerId) === String(product.sellerId));
 			if (existingCart) {
 				// Si el vendedor ya existe, actualiza el producto o agrégalo si no existe
-				const existingProduct = existingCart.products.find(productCart => String(productCart.productId) === String(product.id));
+				const existingProduct = existingCart.products.find(productCart => String(productCart.productId) === String(product));
 
 				if (existingProduct) {
 					if (canAddToCart(product.stock, existingProduct.quantity, quantity)) {

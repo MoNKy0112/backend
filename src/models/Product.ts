@@ -1,4 +1,4 @@
-import {Schema, model, type Document} from 'mongoose';
+import {Schema, model} from 'mongoose';
 
 export type IProduct = {
 	sellerId: Schema.Types.ObjectId | string;
@@ -65,11 +65,11 @@ const productSchema = new Schema({
 	},
 	createdat: {
 		type: Schema.Types.Date,
-		require: true,
+		required: true,
 	},
 	updatedat: {
 		type: Schema.Types.Date,
-		require: true,
+		required: true,
 	},
 });
 

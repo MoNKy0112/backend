@@ -1,10 +1,10 @@
-
-// Const mercadopago = new MercadoPago('TEST-a6587ee8-c0ea-4440-bdec-429bbc3da59d', {
-// 	locale: 'es-CO',
-// });
-const mercadopago = new MercadoPago('TEST-c5249e26-548f-4bef-a100-351c30bfa9bf', {
+// Tienda
+const mercadopago = new MercadoPago('TEST-a6587ee8-c0ea-4440-bdec-429bbc3da59d', {
 	locale: 'es-CO',
 });
+// Const mercadopago = new MercadoPago('TEST-c5249e26-548f-4bef-a100-351c30bfa9bf', {
+// 	locale: 'es-CO',
+// });
 
 document.getElementById('checkout-btn').addEventListener('click', () => {
 	const orderData = {
@@ -39,6 +39,7 @@ function createCheckoutButton(preferenceId) {
 			'button-checkout', // Class/id where the payment button will be displayed
 			{
 				initialization: {
+					marketplace: true,
 					preferenceId,
 				},
 				callbacks: {

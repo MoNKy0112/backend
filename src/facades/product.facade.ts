@@ -1,4 +1,4 @@
-import {type Types, type ObjectId, type UpdateQuery, type QueryOptions} from 'mongoose';
+import {type Types, type ObjectId, type UpdateQuery, type QueryOptions, type Model} from 'mongoose';
 import ProductModel, {type IProduct} from '../models/Product';
 
 export type InterfaceProductFilters = {
@@ -65,7 +65,7 @@ class ProductFacade {
 		}
 	}
 
-	async getProductById(productId: string | ObjectId): Promise<IProduct> {
+	async getProductById(productId: string | ObjectId) {
 		try {
 			const product = await ProductModel.findById(productId);
 			if (!product) throw new Error('Error trying to get a product for your ID');

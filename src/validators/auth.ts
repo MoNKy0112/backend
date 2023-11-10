@@ -1,4 +1,4 @@
-import {body, check, param} from 'express-validator';
+import {type ValidationChain, body, check, param} from 'express-validator';
 import validateResult from '../utilities/validateHelper';
 import {type Request, type NextFunction, type Response} from 'express';
 class ValidateAuth {

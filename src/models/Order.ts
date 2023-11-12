@@ -13,6 +13,14 @@ export type IOrder = {
 	date: Date;
 };
 
+export type IPayItem = {
+	id: string;
+	title: string;
+	quantity: number;
+	currency_id: string;
+	unit_price: number;
+};
+
 const orderSchema = new Schema({
 	userId: {
 		type: Types.ObjectId,

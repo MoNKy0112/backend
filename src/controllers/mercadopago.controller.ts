@@ -1,6 +1,6 @@
 
 /* eslint-disable @typescript-eslint/naming-convention */
-
+import mongoose, {Types, type ObjectId, Mongoose} from 'mongoose';
 import {type Request, type Response} from 'express';
 import MercadoPagoConfig, {Preference, Payment, PaymentMethod} from 'mercadopago';
 import type {PreferenceCreateData} from 'mercadopago/dist/clients/preference/create/types';
@@ -9,29 +9,19 @@ import {type PaymentResponse} from 'mercadopago/dist/clients/payment/commonTypes
 import mercadopagoFacade from '../facades/mercadopago.facade';
 import orderFacade from '../facades/order.facade';
 import {type IOrder} from '../models/Order';
+import {type IPayItem} from '../models/Order';
+import ProductFacade from '../facades/product.facade';
+import OrderFacade from '../facades/order.facade';
 // Const client = new MercadoPagoConfig({accessToken: 'TEST-4999751880735799-102715-68f114798c57ff6fa5a0c75d88244183-1525915431'});
 const client: MercadoPagoConfig = new MercadoPagoConfig({accessToken: 'TEST-4999751880735799-102722-f86edf9771511613a2956599d623f117-1527430192'});
 
 export const create_preference = async (req: Request, res: Response) => {
 	try {
+		console.log('algo');
 		const preference = new Preference(client);
-		const preferenceData: PreferenceCreateData = {body: {
-			items: [
-				{
-					id:	'1',
-					title: 'producto',
-					quantity: 1,
-					currency_id: 'COP',
-					unit_price: 10000,
-				},
-				{
-					id:	'2',
-					title: 'producto 2',
-					quantity: 7,
-					currency_id: 'COP',
-					unit_price: 800,
-				},
-			],
+		const items = await OrdertoPay(req.body.orderId);
+		const preferenceData = {body: {
+			items,
 			back_urls: {
 				success: 'http://localhost:3000/feedback',
 				failure: 'http://localhost:3000/feedback',
@@ -122,3 +112,30 @@ export const createPayment = async (req: Request, res: Response) => {
 		res.status(500).json(error);
 	}
 };
+
+export async function OrdertoPay(orderId: ObjectId | string): Promise<IPayItem[]> {
+	const order = await OrderFacade.getOrderById(orderId);
+
+	const items: IPayItem[] = [];
+
+	await Promise.all(
+		order.products.map(async product => {
+			try {
+				const producto = await ProductFacade.getProductById(product.productId);
+				const paymentItem: IPayItem = {
+					id: String(product.productId),
+					title: producto.name,
+					quantity: product.quantity,
+					currency_id: 'COP',
+					unit_price: product.subtotal / product.quantity,
+				};
+
+				items.push(paymentItem);
+			} catch (error) {
+				console.log('error #', error);
+			}
+		}),
+	);
+	console.log('paymentItems', items);
+	return items;
+}

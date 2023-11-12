@@ -8,9 +8,7 @@ const mercadopago = new MercadoPago('TEST-a6587ee8-c0ea-4440-bdec-429bbc3da59d',
 
 document.getElementById('checkout-btn').addEventListener('click', () => {
 	const orderData = {
-		quantity: 1,
-		description: 'nothing',
-		price: 300,
+		orderId: document.getElementById('order-id').value,
 	};
 	console.log('algo');
 	fetch('http://localhost:3000/create_preference', {

@@ -30,9 +30,10 @@ export const createNewOrder = async (req: Request, res: Response) => {
 				userId: user._id as string,
 				sellerId,
 				products,
-				status: 'En proceso',
+				status: '',
 				date: new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000)),
 				totalAmount: total,
+				preferenceId: '',
 			};
 			return order;
 		});

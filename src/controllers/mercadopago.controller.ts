@@ -19,7 +19,9 @@ export const create_preference = async (req: Request, res: Response) => {
 	try {
 		console.log('algo');
 		const preference = new Preference(client);
-		const items = await OrdertoPay(req.body.orderId);
+		const {orderId} = req.body;
+		// If ((await orderFacade.getOrderById(orderId)).preferenceId !== '') throw new Error('This order already has a preference');
+		const items = await OrdertoPay(orderId);
 		const preferenceData = {body: {
 			items,
 			back_urls: {
@@ -33,6 +35,11 @@ export const create_preference = async (req: Request, res: Response) => {
 		}};
 
 		const pref = await preference.create(preferenceData);
+		const newData: Partial<IOrder> = {
+			preferenceId: pref.id,
+			status: 'pending',
+		};
+		const order = await orderFacade.updateOrder(orderId, newData);
 		res.status(200).json(pref.id);
 	} catch (error) {
 		console.log('error #', error);
@@ -49,13 +56,12 @@ export const getPreference = async (req: Request, res: Response) => {
 		};
 
 		const data = await mercadopagoFacade.getData(ids.paymentId, ids.preferenceId, ids.merchantOrderId);
-		const statusOrder = data.paymentData.status;
+		const statusOrder = data.paymentData.status!;
+		console.log(statusOrder);
 		// TODO get order by preferenceId
-		// actualizar order status en bd
-		const newData: Partial<IOrder> = {
-			status: statusOrder,
-		};
-		const newOrder = await orderFacade.updateOrder('123123', newData);
+
+		const newOrder = await orderFacade.getOrderByPreferenceId(ids.preferenceId, statusOrder);
+		// Actualizar order status en bd
 
 		res.status(200).json({data, newOrder});
 	} catch (error) {

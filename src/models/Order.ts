@@ -11,6 +11,7 @@ export type IOrder = {
 	totalAmount: number;
 	status: string;
 	date: Date;
+	preferenceId: string;
 };
 
 export type IPayItem = {
@@ -52,6 +53,11 @@ const orderSchema = new Schema({
 		type: Schema.Types.Date,
 		required: true,
 		default: Date.now,
+	},
+	preferenceId: {
+		type: String,
+		required: false,
+		unique: true,
 	},
 });
 

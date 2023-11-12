@@ -13,6 +13,7 @@ class Mercadopago {
 			const paymentData = await payment.get({id: paymentId});
 
 			const data = {preferenceData, merchanOrderData, paymentData};
+			if (!data) throw new Error('Error obtaining order data in Mercado Pago');
 			return data;
 		} catch (error) {
 			if (error instanceof Error) {

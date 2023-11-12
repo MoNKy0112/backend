@@ -52,6 +52,20 @@ class OrderFacade {
 		}
 	}
 
+	async getOrderByPreferenceId(preferenceId: string, status: string) {
+		try {
+			const order = await Order.findOneAndUpdate({preferenceId}, {status}, {new: true});
+			if (!order) throw new Error('error when trying to obtain an order by preference');
+			return order;
+		} catch (error) {
+			if (error instanceof Error) {
+				throw error;
+			} else {
+				throw new Error('Error obtaining the order by preference ID');
+			}
+		}
+	}
+
 	// Async getOrdersByFilters(filters: IOrderFilters): Promise<IOrder[]> {
 	// 	try {
 	// 		const orders = await Order.find(filters as FilterQuery<IOrder>);

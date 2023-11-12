@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Seleccionar Fecha y Hora</title>
+
+  <!-- Incluye el estilo de flatpickr -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+  <!-- Incluye la biblioteca de flatpickr -->
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+</head>
+<body>
+  <!-- Contenido del cuerpo del HTML -->
+</body>
+</html>
+<!-- ... (código HTML previo) ... -->
+
+<body>
+  <h2>Selecciona Fecha y Hora</h2>
+
+  <form>
+    <label for="datetime">Fecha y Hora:</label>
+    <input type="text" id="datetime" name="datetime">
+
+    <!-- Botón para enviar o procesar la fecha y hora seleccionadas -->
+    <button type="button" onclick="submitForm()">Enviar</button>
+  </form>
+
+  <!-- Script para inicializar flatpickr -->
+  <script>
+    flatpickr("#datetime", {
+      enableTime: true,
+      dateFormat: "Y-m-d H:i", // Formato de fecha y hora
+      minDate: "today",        // Fecha mínima (hoy)
+      time_24hr: true,  
+	  minuteIncrement: 30,   
+	  minTime: "06:00",        // Hora mínima (6 am)
+      maxTime: "18:00",   
+	  disable: [
+        function(date) {
+          // Deshabilitar sábados y domingos
+          return (date.getDay() === 0 || date.getDay() === 6);
+        }
+      ],     // Hora máxima (6 pm)       // Formato de 24 horas
+      onReady: function (selectedDates, dateStr, instance) {
+        // Evento personalizado después de que flatpickr está listo
+        instance.calendarContainer.querySelector(".flatpickr-time .flatpickr-minute").addEventListener("change", function (event) {
+          const selectedMinute = event.target.value;
+          if (selectedMinute % 30 !== 0) {
+            // Si el minuto seleccionado no es 0 o 30, ajustarlo al valor más cercano
+            instance.setDate(instance.selectedDates[0].setMinutes(selectedMinute - (selectedMinute % 30)), false);
+          }
+        });
+      }
+    });
+
+    // Función para procesar la fecha y hora seleccionadas
+    function submitForm() {
+      const datetimeInput = document.getElementById('datetime');
+      const selectedDatetime = datetimeInput.value;
+
+      // Puedes enviar 'selectedDatetime' al servidor o realizar otras acciones según tus necesidades
+      console.log('Fecha y Hora Seleccionadas:', selectedDatetime);
+    }
+  </script>
+</body>
+</html>

@@ -27,6 +27,7 @@ export const signUp = async (req: Request, res: Response) => {
 		console.log(user);
 		const savedUser = await authFacade.saveuser(user);
 		// Token
+		// TODO verificar el usuario enviandole un correo el cual tenga que verificar
 		const accessToken = await token.generateAccessToken({_id: user._id as ObjectId});
 		const refreshToken = await token.generateRefreshToken({_id: user._id as ObjectId});
 

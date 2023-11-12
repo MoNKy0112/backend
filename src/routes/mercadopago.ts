@@ -10,6 +10,7 @@ router.get('/feedback', (req, res) => {
 		payment: req.query.payment_id,
 		status: req.query.status,
 		merchantOrder: req.query.merchant_order_id,
+		preferenceId: req.query.preference_id,
 	});
 });
 

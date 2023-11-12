@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Seleccionar Puntos en una Imagen</title>
+  <style>
+    canvas {
+      border: 1px solid #000;
+    }
+  </style>
+</head>
+<body>
+  <h2>Selecciona un Punto en la Imagen</h2>
+  <p>Haz clic en un punto para seleccionarlo.</p>
+
+  <canvas id="imageCanvas" width="500" height="500"></canvas>
+
+  <script>
+    const canvas = document.getElementById('imageCanvas');
+    const context = canvas.getContext('2d');
+    const image = new Image();
+    image.src = './imagen.jpg';  // Reemplaza con la ruta de tu imagen
+
+    const predefinedPoints = [
+      { x: 100, y: 150 },
+      { x: 250, y: 300 },
+      { x: 400, y: 100 }
+      // Agrega más puntos según tus necesidades
+    ];
+
+    image.onload = function () {
+      drawPredefinedPoints();
+    };
+
+    canvas.addEventListener('click', function (event) {
+      const rect = canvas.getBoundingClientRect();
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+
+      // Verifica si el usuario hizo clic en uno de los puntos predefinidos
+      for (const point of predefinedPoints) {
+        const distance = Math.sqrt((x - point.x) ** 2 + (y - point.y) ** 2);
+        if (distance <= 5) { // Puedes ajustar el radio de tolerancia según tus necesidades
+          alert(`Punto seleccionado en (${point.x}, ${point.y})`);
+          return;
+        }
+      }
+
+      alert('Haz clic en un punto válido.');
+    });
+
+    function drawPredefinedPoints() {
+      context.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+      context.fillStyle = 'red';
+      context.strokeStyle = 'red';
+
+      for (const point of predefinedPoints) {
+        context.beginPath();
+        context.arc(point.x, point.y, 5, 0, 2 * Math.PI);
+        context.fill();
+        context.stroke();
+      }
+    }
+  </script>
+</body>
+</html>

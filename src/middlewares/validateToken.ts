@@ -23,7 +23,7 @@ export const tokenValidation = (req: Request, res: Response, next: NextFunction)
 	} catch (error) {
 		// Res.status(401).json(error);
 		if (error instanceof Error) {
-			console.error('Error whit token:', error.message);
+			console.error('Error with token:', error.message);
 			res.status(401).json(error.message);
 		} else {
 			console.error('Unknown error:', error);

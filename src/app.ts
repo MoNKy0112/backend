@@ -11,6 +11,7 @@ import orderRoutes from './routes/order';
 import userRoutes from './routes/user';
 import productRoutes from './routes/product';
 import categoriesRoutes from './routes/category';
+import recommendRoutes from './routes/recommend';
 // Settings
 app.set('port', config.SERVER_PORT || 3000);
 // Midllewares
@@ -54,4 +55,5 @@ app.use(orderRoutes);
 app.use(userRoutes);
 app.use(productRoutes);
 app.use(categoriesRoutes);
+app.use(recommendRoutes);
 export default app;

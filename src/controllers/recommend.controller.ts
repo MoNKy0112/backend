@@ -3,7 +3,6 @@ import Product from '../models/Product';
 import User from '../models/User';
 import {type Request, type Response} from 'express';
 
-// Controlador para obtener recomendaciones de productos
 export const getRecommendations = async (req: Request, res: Response) => {
 	try {
 		let recommendations;
@@ -15,25 +14,20 @@ export const getRecommendations = async (req: Request, res: Response) => {
 			return res.status(200).json({recommendations});
 		}
 
-		console.log(user);
-
 		const {favoriteCategories, favoriteProducts} = user;
 
 		switch (true) {
 			case favoriteProducts.length === 0 && favoriteCategories.length === 0:
-				console.log('Aqui 1');
 				recommendations = await Product.aggregate([{$sample: {size: 10}}]);
 				break;
 
 			case favoriteProducts.length > 0 && favoriteCategories.length === 0:
-				console.log('Aqui 2');
 				recommendations = await Product.find({
 					_id: {$in: favoriteProducts},
 				}).limit(10);
 				break;
 
 			case favoriteProducts.length === 0 && favoriteCategories.length > 0:
-				console.log('Aqui 3');
 				recommendations = await Product.find({
 					categories: {$in: favoriteCategories},
 				}).limit(10);

@@ -43,7 +43,7 @@ export const getRecommendations = async (req: Request, res: Response) => {
 
 		const remaining = 10 - recommendations.length;
 		const additionalRecommendations = await Product.aggregate([{$sample: {size: remaining}}]);
-		recommendations = recommendations.concat([{$sample: {size: additionalRecommendations}}]);
+		recommendations = recommendations.concat(additionalRecommendations);
 
 		return res.status(200).json({recommendations});
 	} catch (error) {

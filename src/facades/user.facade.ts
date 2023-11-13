@@ -170,7 +170,7 @@ class UserFacade {
 		try {
 			const user = await User.findByIdAndUpdate(
 				userId,
-				{$addToSet: {favouriteProducts: {$each: products}}},
+				{$addToSet: {favoriteProducts: {$each: products}}},
 				{new: true},
 			);
 
@@ -194,7 +194,7 @@ class UserFacade {
 		try {
 			const user = await User.findByIdAndUpdate(
 				userId,
-				{$pull: {favouriteProducts: {$in: products}}},
+				{$pull: {favoriteProducts: {$in: products}}},
 				{new: true},
 			);
 
@@ -217,7 +217,7 @@ class UserFacade {
 		try {
 			const user = await User.findByIdAndUpdate(
 				userId,
-				{$addToSet: {favouriteCategories: {$each: categories}}},
+				{$addToSet: {favoriteCategories: {$each: categories}}},
 				{new: true},
 			);
 
@@ -240,7 +240,7 @@ class UserFacade {
 		try {
 			const user = await User.findByIdAndUpdate(
 				userId,
-				{$pull: {favouriteProducts: {$in: categories}}},
+				{$pull: {favoriteProducts: {$in: categories}}},
 				{new: true},
 			);
 

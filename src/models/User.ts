@@ -72,11 +72,11 @@ const userSchema = new Schema({
 		type: String,
 		required: false,
 	},
-	favouriteCategories: [{
+	favoriteCategories: [{
 		type: Schema.Types.ObjectId,
 		ref: 'Categories',
 	}],
-	favouriteProducts: [{
+	favoriteProducts: [{
 		type: Schema.Types.ObjectId,
 		ref: 'Product',
 	}],

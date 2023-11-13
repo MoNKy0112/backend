@@ -72,10 +72,10 @@ const userSchema = new Schema({
 		type: String,
 		required: false,
 	},
-	favouriteCategories: {
+	favouriteCategories: [{
 		type: Schema.Types.ObjectId,
 		ref: 'Categories',
-	},
+	}],
 	favouriteProducts: [{
 		type: Schema.Types.ObjectId,
 		ref: 'Product',

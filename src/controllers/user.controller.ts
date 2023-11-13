@@ -1,6 +1,7 @@
 import {type Request, type Response} from 'express';
 import UserFacade from '../facades/user.facade';
 import {type IUser} from 'models/User';
+import productFacade from '../facades/product.facade';
 
 class UserController {
 	public async getUsers(req: Request, res: Response): Promise<void> {
@@ -57,7 +58,7 @@ class UserController {
 		try {
 			const {userId} = req;
 			const productId = req.body.product as string;
-			const quantity = req.body.quantity as number; // Obtén la cantidad desde el cuerpo de la solicitud
+			const quantity = req.body.quantity as number;
 			const user = await UserFacade.addToCart(userId, productId, quantity);
 			res.json(user).status(200);
 		} catch (error) {
@@ -75,7 +76,8 @@ class UserController {
 		try {
 			const {userId} = req;
 			const productId = req.body.product as string;
-			const user = await UserFacade.removeOfCart(userId, productId);
+			const quantity = req.body.quantity as number;
+			const user = await UserFacade.removeOfCart(userId, productId, quantity);
 
 			res.json(user).status(200);
 		} catch (error) {

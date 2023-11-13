@@ -3,6 +3,8 @@ import bcrypt from 'bcryptjs';
 
 type CartProduct = {
 	productId: ObjectId | string;
+	productName: string;
+	productImageUrl: string;
 	quantity: number;
 	subtotal: number;
 };
@@ -70,11 +72,11 @@ const userSchema = new Schema({
 		type: String,
 		required: false,
 	},
-	favoriteCategories: [{
+	favouriteCategories: [{
 		type: Schema.Types.ObjectId,
 		ref: 'Categories',
 	}],
-	favoriteProducts: [{
+	favouriteProducts: [{
 		type: Schema.Types.ObjectId,
 		ref: 'Product',
 	}],
@@ -91,6 +93,8 @@ const userSchema = new Schema({
 			products: [
 				{
 					productId: {type: Schema.Types.ObjectId, ref: 'Product', required: true},
+					productName: {type: String, required: true},
+					productImageUrl: {type: String, required: true},
 					quantity: {type: Number, required: true},
 					subtotal: {type: Number, required: true},
 				},

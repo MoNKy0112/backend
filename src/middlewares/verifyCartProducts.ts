@@ -34,6 +34,7 @@ export const verifyCartProducts = async (req: Request, res: Response, next: Next
 	}
 };
 
+// TODO: revisar middleware ya no utilizado
 export const verifyStockToAdd = async (req: Request, res: Response, next: NextFunction) => {
 	try {
 		const productId = req.body.product as string;

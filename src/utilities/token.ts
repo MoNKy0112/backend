@@ -29,7 +29,7 @@ class Jwtoken {
 		return this.generate(payload, this.resetKey, expTime ?? 60 * 60);
 	}
 
-	public async generateVerifyEmailkey(payload: Ipayload, expTime?: string | number): Promise<string> {
+	public async generateVerifyEmailToken(payload: Ipayload, expTime?: string | number): Promise<string> {
 		return this.generate(payload, this.verifyEmailkey, expTime ?? 60 * 60 * 24);
 	}
 

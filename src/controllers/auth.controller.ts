@@ -30,7 +30,13 @@ export const signUp = async (req: Request, res: Response) => {
 		// Token
 		const accessToken = await token.generateAccessToken({_id: user._id as ObjectId});
 		const refreshToken = await token.generateRefreshToken({_id: user._id as ObjectId});
-
+		const verifyEmailToken = await token.generateVerifyEmailToken({_id: user._id as ObjectId});
+		const verificationLink = `${config.FRONT_URL ?? `http://localhost:${process.env.PORT ?? '8080'}`}/verify_email?verifyemailtoken=${verifyEmailToken}`;
+		const data: EmailTemplateData = {
+			nombre: user.name,
+			url: verificationLink,
+		};
+		await sendMail(user.email, 'Verify your email', 'verifyEmail', data);
 		res.cookie('authToken', accessToken, {
 			maxAge: 36000,
 			secure: (process.env.NODE_ENV !== 'dev'), // Solo se envía a través de conexiones HTTPS
@@ -53,6 +59,20 @@ export const signUp = async (req: Request, res: Response) => {
 	}
 };
 
+export const verifyEmail = async (req: Request, res: Response) => {
+	try {
+		const {userId} = req;
+		const user = authFacade.verifyEmail(userId);
+		res.status(200).json(user);
+	} catch (error) {
+		if (error instanceof Error) {
+			res.status(400).json(error);
+		} else {
+			res.status(500).json(error);
+		}
+	}
+};
+
 export const signIn = async (req: Request, res: Response) => {
 	try {
 		const user = await authFacade.validateuser(req.body.email as string);
@@ -66,7 +86,7 @@ export const signIn = async (req: Request, res: Response) => {
 			throw new Error('Password is wrong'); // Lanzar una excepción en lugar de devolver un mensaje directamente
 		}
 
-		const accessToken = await token.generateAccessToken({_id: user._id as ObjectId});
+		const accessToken = await token.generateAccessToken({_id: user._id as ObjectId}, 1);
 		const refreshToken = await token.generateRefreshToken({_id: user._id as ObjectId});
 		console.log('mode deploy:', (process.env.NODE_ENV !== 'dev'));
 		res.cookie('authToken', accessToken, {
@@ -91,7 +111,6 @@ export const signIn = async (req: Request, res: Response) => {
 
 export const profile = async (req: Request, res: Response) => {
 	try {
-		console.log(req.userId);
 		const user = await authFacade.getuser(req.userId);
 		if (!user) throw new Error('User not found!');
 		res.json(user);
@@ -132,3 +151,4 @@ export const passwordReset = async (req: Request, res: Response) => {
 	console.log(newuser);
 	res.status(200).json(user);
 };
+

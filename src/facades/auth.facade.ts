@@ -13,8 +13,23 @@ class AuthFacade {
 		return user;
 	}
 
+	public async verifyEmail(userId: string) {
+		try {
+			const user = await User.findByIdAndUpdate(userId, {emailVerified: true}, {new: true});
+			if (!user) throw new Error('error when trying to verify the user');
+			return user;
+		} catch (error) {
+			if (error instanceof Error) {
+				throw error;
+			} else {
+				throw new Error('Unknown error when trying to verify the user');
+			}
+		}
+	}
+
 	public async getuser(userId: string) {
-		const user = User.findById(userId);
+		const user = await User.findById(userId);
+		if (!user) throw new Error('error al intentar obtener usuario');
 		return user;
 	}
 

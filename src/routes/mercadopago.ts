@@ -1,6 +1,7 @@
 import {Router} from 'express';
-import {create_preference, getPreference, getPaymentMethods, createPayment, OrdertoPay} from '../controllers/mercadopago.controller';
+import {create_preference, getPreference, getAuthorizationURL, linkSeller} from '../controllers/mercadopago.controller';
 import path from 'path';
+import {tokenValidation} from '../middlewares/validateToken';
 const router: Router = Router();
 
 router.post('/create_preference', create_preference);
@@ -14,13 +15,15 @@ router.get('/feedback', (req, res) => {
 	});
 });
 
+router.get('/getlink', getAuthorizationURL);
 router.post('/getpref', getPreference);
-router.get('/methods', getPaymentMethods);
-router.get('/pay', createPayment);
+router.post('/linkseller', tokenValidation, linkSeller);
+
+// Router.get('/methods', getPaymentMethods);
+// router.get('/pay', createPayment);
 router.get('/mpago', (req, res) => {
 	const srcPath = path.resolve(__dirname, '..', 'public', 'mercadopago.html');
 	res.status(200).sendFile(srcPath);
 });
-router.post('/ordertopay', OrdertoPay);
 
 export default router;

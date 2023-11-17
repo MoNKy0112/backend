@@ -29,6 +29,8 @@ export type IUser = {
 	favouriteCategories: ObjectId[] | string[];
 	favouriteProducts: ObjectId[] | string[];
 	cart: Cart[];
+	accessTokenMp: string;
+	refreshTokenMp: string;
 	encryptPassword(password: string): Promise<string>;
 	validatePassword(password: string): Promise<boolean>;
 
@@ -101,6 +103,16 @@ const userSchema = new Schema({
 			],
 		},
 	],
+	accessTokenMp: {
+		type: String,
+		default: null,
+		required: false,
+	},
+	refreshTokenMp: {
+		type: String,
+		default: null,
+		required: false,
+	},
 	isAdmin: {
 		type: Boolean,
 		default: false,

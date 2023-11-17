@@ -54,6 +54,28 @@ class UserFacade {
 		}
 	}
 
+	public async updateUserById(userId: string, updatedUserFields: UpdateQuery<IUser>): Promise<IUser> {
+		try {
+			const updatedUser = await User.findByIdAndUpdate(
+				userId,
+				updatedUserFields,
+				{new: true},
+			);
+
+			if (!updatedUser) {
+				throw new Error('User not found');
+			}
+
+			return updatedUser;
+		} catch (error) {
+			if (error instanceof Error) {
+				throw error;
+			} else {
+				throw new Error('Error trying to update user');
+			}
+		}
+	}
+
 	public async emptyCart(userId: ObjectId | string) {
 		try {
 			const updateData: Partial<IUser> = {

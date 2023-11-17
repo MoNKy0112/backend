@@ -1,5 +1,11 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // Tienda
-const mercadopago = new MercadoPago('TEST-a6587ee8-c0ea-4440-bdec-429bbc3da59d', {
+
+const tiunKey = 'TEST-a6587ee8-c0ea-4440-bdec-429bbc3da59d';
+const jKey = 'TEST-b9d8b3e8-7cb2-49c2-b5f4-2fb3f8a9371e';
+const sellerKey = 'TEST-c5249e26-548f-4bef-a100-351c30bfa9bf';
+
+const mercadopago = new MercadoPago(tiunKey, {
 	locale: 'es-CO',
 });
 // Const mercadopago = new MercadoPago('TEST-c5249e26-548f-4bef-a100-351c30bfa9bf', {

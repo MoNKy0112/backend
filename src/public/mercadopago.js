@@ -17,7 +17,7 @@ document.getElementById('checkout-btn').addEventListener('click', () => {
 		orderId: document.getElementById('order-id').value,
 	};
 	console.log('algo');
-	fetch('http://localhost:3000/create_preference', {
+	fetch(process.env.BACK_URL || 'http://localhost:3000/create_preference', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',

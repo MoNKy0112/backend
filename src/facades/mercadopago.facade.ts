@@ -102,6 +102,7 @@ class Mercadopago {
 								products: order.products.filter(prod => prod.productId !== product.productId),
 							};
 							await orderFacade.updateOrder(orderId, newData);
+							return this.ordertoPay(orderId);
 						}
 
 						throw error;

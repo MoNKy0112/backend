@@ -9,6 +9,7 @@ import userFacade from './user.facade';
 import {type OAuthResponse} from 'mercadopago/dist/clients/oAuth/commonTypes';
 import config from '../config';
 import {v4 as uuidv4} from 'uuid';
+import orderFacade from './order.facade';
 const tiunAT = 'TEST-4999751880735799-102715-68f114798c57ff6fa5a0c75d88244183-1525915431';
 const clientAT = 'TEST-4999751880735799-102722-f86edf9771511613a2956599d623f117-1527430192';
 const tiunClient: MercadoPagoConfig = new MercadoPagoConfig({accessToken: tiunAT});
@@ -93,9 +94,18 @@ class Mercadopago {
 
 					items.push(paymentItem);
 				} catch (error) {
-					console.error('error', error);
-					// TODO updateorder borrando el producto que no esta
-					throw error;
+					if (error instanceof Error) {
+						console.error('error', error);
+						// TODO updateorder borrando el producto que no esta
+						if (error.message === 'Error trying to get a product for your ID') {
+							const newData: Partial<IOrder> = {
+								products: order.products.filter(prod => prod.productId !== product.productId),
+							};
+							await orderFacade.updateOrder(orderId, newData);
+						}
+
+						throw error;
+					}
 				}
 			}),
 		);

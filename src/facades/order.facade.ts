@@ -175,6 +175,10 @@ class OrderFacade {
 
 	public async updateOrder(orderId: ObjectId | string, newData: Partial<IOrder>) {
 		try {
+			if (newData.products) {
+				newData.totalAmount = newData.products.reduce((totalAmount, p) => totalAmount + p.subtotal, 0);
+			}
+
 			const order = await Order.findByIdAndUpdate(orderId, newData, {new: true});
 			return order;
 		} catch (error) {

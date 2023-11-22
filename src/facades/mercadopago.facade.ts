@@ -18,12 +18,13 @@ const Sellerclient: MercadoPagoConfig = new MercadoPagoConfig({accessToken: clie
 class Mercadopago {
 	public async updateOrder(paymentId: string, preferenceId: string, merchantOrderId: string) {
 		try {
-			const sellerId = (await OrderFacade.getOrderByPreferenceId(preferenceId)).sellerId as string;
+			const order = await OrderFacade.getOrderByPreferenceId(preferenceId);
+			const sellerId = order.sellerId as string;
 			console.log('algo');
 			const data = await this.getData(sellerId, paymentId, preferenceId, merchantOrderId);
 			const statusOrder = data.paymentData.status!;
 			console.log(statusOrder);
-			// TODO si statusOrder == rejected returnStock
+			if (statusOrder === 'rejected') await orderFacade.returnStock(order);
 			const newOrder = await OrderFacade.updateOrderByPreferenceId(preferenceId, statusOrder);
 			return newOrder;
 		} catch (error) {
@@ -39,8 +40,8 @@ class Mercadopago {
 		try {
 			const order = await OrderFacade.getOrderById(orderId);
 			const sellerAT = (await userFacade.getUserById(order.sellerId)).accessTokenMp;
-			if (!sellerAT) throw new Error('usuario sin acccess token mp');
-			const client: MercadoPagoConfig = new MercadoPagoConfig({accessToken: sellerAT});
+			// If (!sellerAT) throw new Error('usuario sin acccess token mp');
+			const client: MercadoPagoConfig = new MercadoPagoConfig({accessToken: clientAT});
 			console.log(client);
 			const preference = new Preference(client);
 			// If ((await orderFacade.getOrderById(orderId)).preferenceId !== '') throw new Error('This order already has a preference');
@@ -158,7 +159,7 @@ class Mercadopago {
 	public async getData(sellerId: string, paymentId: string, preferenceId: string, merchantOrderId: string) {
 		try {
 			const sellerAT = (await userFacade.getUserById(sellerId)).accessTokenMp;
-			const client: MercadoPagoConfig = new MercadoPagoConfig({accessToken: sellerAT});
+			const client: MercadoPagoConfig = new MercadoPagoConfig({accessToken: clientAT});
 			const preference = new Preference(client);
 			const preferenceData = await preference.get({preferenceId});
 			const merchanOrder = new MerchantOrder(client);

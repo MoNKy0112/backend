@@ -16,8 +16,15 @@ document.getElementById('checkout-btn').addEventListener('click', () => {
 	const orderData = {
 		orderId: document.getElementById('order-id').value,
 	};
+	console.log('algo1');
+	// If (process.env.NODE_ENV === 'dev') {
+	// 	url = 'http://localhost:3000/create_preference';
+	// } else {
+	// 	url = process.env.BACK_URL + 'create_preference';
+	// }
+
 	console.log('algo');
-	fetch(process.env.BACK_URL || 'http://localhost:3000/create_preference', {
+	fetch('http://localhost:3000/create_preference', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',

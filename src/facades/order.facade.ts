@@ -1,6 +1,7 @@
 import mongoose, {Types, type ObjectId, Mongoose} from 'mongoose';
 import Order, {type IOrder} from '../models/Order';
 import {type FilterQuery} from 'mongoose';
+import productFacade from './product.facade';
 
 // Export type IOrderFilters = {
 // 	userId?: Types.ObjectId;
@@ -78,6 +79,11 @@ class OrderFacade {
 				throw new Error('Error obtaining the order by preference ID');
 			}
 		}
+	}
+
+	async returnStock(order: IOrder) {
+		const products = order.products.flatMap(async p => productFacade.addStock(p.productId, p.quantity));
+		await Promise.all(products);
 	}
 
 	// Async getOrdersByFilters(filters: IOrderFilters): Promise<IOrder[]> {

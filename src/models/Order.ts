@@ -12,6 +12,7 @@ export type IOrder = {
 	status: string;
 	date: Date;
 	preferenceId: string;
+	expireDate?: Date;
 };
 
 export type IPayItem = {
@@ -58,6 +59,11 @@ const orderSchema = new Schema({
 		type: String,
 		required: false,
 		unique: true,
+	},
+	expireDate: {
+		type: Schema.Types.Date,
+		required: true,
+		default: new Date(Date.now() + (3 * 60 * 60 * 1000)),
 	},
 });
 

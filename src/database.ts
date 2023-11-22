@@ -9,3 +9,4 @@ import config from './config';
 		console.error('Error en la conexión a la base de datos:', error);
 	}
 })();
+

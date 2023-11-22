@@ -2,7 +2,7 @@ import mongoose, {Types, type ObjectId, Mongoose} from 'mongoose';
 import Order, {type IOrder} from '../models/Order';
 import {type FilterQuery} from 'mongoose';
 import productFacade from './product.facade';
-
+import task from '../utilities/task';
 // Export type IOrderFilters = {
 // 	userId?: Types.ObjectId;
 // 	sellerId?: Types.ObjectId;
@@ -29,6 +29,8 @@ class OrderFacade {
 			if (!newOrder) throw new Error('Error trying to create order');
 			const savedOrder = await newOrder.save();
 			if (!savedOrder) throw new Error('Error trying to keep order');
+			console.log((Date.now() + (60 * 1000)) - Date.now());
+			await task.expireOrderTask(newOrder._id as string, new Date(Date.now() + (60 * 1000)));
 			return savedOrder;
 		} catch (error) {
 			if (error instanceof Error) {

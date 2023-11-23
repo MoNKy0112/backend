@@ -102,7 +102,7 @@ class UserFacade {
 			const existingCart = user.cart.find(cartEntry => String(cartEntry.sellerId) === String(product.sellerId));
 			if (existingCart) {
 				// Si el vendedor ya existe, actualiza el producto o agrégalo si no existe
-				const existingProduct = existingCart.products.find(productCart => String(productCart.productId) === String(product));
+				const existingProduct = existingCart.products.find(productCart => String(productCart.productId) === String(product.id));
 
 				if (existingProduct) {
 					if (canAddToCart(product.stock, existingProduct.quantity, quantity)) {

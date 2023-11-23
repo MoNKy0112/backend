@@ -29,8 +29,12 @@ class OrderFacade {
 			if (!newOrder) throw new Error('Error trying to create order');
 			const savedOrder = await newOrder.save();
 			if (!savedOrder) throw new Error('Error trying to keep order');
-			console.log((Date.now() + (60 * 1000)) - Date.now());
-			await task.expireOrderTask(newOrder._id as string, new Date(Date.now() + (60 * 1000)));
+			// Console.log(new Date(Date.now() + (60 * 60 * 1000)));
+			const date = new Date(Date.now() + (60 * 60 * 1000));
+			const orderId = newOrder._id as string;
+			await task.expireOrderTask(orderId, date);
+			await task.schedule(date, `expireOrderTask${orderId}`, {task: 'expireOrder', orderId});
+			await task.start();
 			return savedOrder;
 		} catch (error) {
 			if (error instanceof Error) {

@@ -31,6 +31,20 @@ class AuthFacade {
 		}
 	}
 
+	public async verifyEmail(userId: string) {
+		try {
+			const user = await User.findByIdAndUpdate(userId, {emailVerified: true}, {new: true});
+			if (!user) throw new Error('error when trying to verify the user');
+			return user;
+		} catch (error) {
+			if (error instanceof Error) {
+				throw error;
+			} else {
+				throw new Error('Unknown error when trying to verify the user');
+			}
+		}
+	}
+
 	public async getuser(userId: string) {
 		try {
 			const user = await User.findById(userId);

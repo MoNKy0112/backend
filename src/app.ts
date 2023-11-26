@@ -14,6 +14,7 @@ import categoriesRoutes from './routes/category';
 import mercadopagoRoutes from './routes/mercadopago';
 import path from 'path';
 import {url} from 'inspector';
+import recommendRoutes from './routes/recommend';
 // Settings
 app.set('port', config.SERVER_PORT || 3000);
 // Midllewares
@@ -68,4 +69,5 @@ app.use(userRoutes);
 app.use(productRoutes);
 app.use(categoriesRoutes);
 app.use(mercadopagoRoutes);
+app.use(recommendRoutes);
 export default app;

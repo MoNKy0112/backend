@@ -9,7 +9,7 @@ type IPayload = {
 
 };
 
-export const tokenValidation = (req: Request, res: Response, next: NextFunction) => {
+export const tokenValidation = async (req: Request, res: Response, next: NextFunction) => {
 	try {
 		const token = req.cookies.authToken as string;
 
@@ -23,10 +23,12 @@ export const tokenValidation = (req: Request, res: Response, next: NextFunction)
 	} catch (error) {
 		// Res.status(401).json(error);
 		if (error instanceof Error) {
-			console.error('Error whit token:', error.message);
+			if (error.message === 'jwt expired') {
+				return refreshToken(req, res, next);
+			}
+
 			res.status(401).json(error.message);
 		} else {
-			console.error('Unknown error:', error);
 			res.status(500).json('An unknown error occurred.');
 		}
 	}
@@ -45,30 +47,28 @@ export const tokenResetValidation = (req: Request, res: Response, next: NextFunc
 		next();
 	} catch (error) {
 		if (error instanceof Error) {
-			console.error('Error whit token:', error.message);
 			res.status(401).json(error.message);
 		} else {
-			console.error('Unknown error:', error);
 			res.status(500).json('An unknown error occurred.');
 		}
 	}
 };
 
-export const refreshToken = (req: Request, res: Response, next: NextFunction) => {
+export const refreshToken = async (req: Request, res: Response, next: NextFunction) => {
+	const token = req.cookies.refreshToken as string;
+	if (!token) throw new Error('Tokens do not exist');
 	try {
-		const token = req.cookies.refreshToken as string;
-		if (!token) throw new Error('refresh token non-existent');
 		const payload = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET ?? 'REFRESH_TOKEN_SECRET') as IPayload;
 
 		req.userId = payload._id;
 
+		await generateNewAccessToken(req, res, next);
+
 		next();
 	} catch (error) {
 		if (error instanceof Error) {
-			console.error('Error whit token:', error.message);
 			res.status(401).json(error.message);
 		} else {
-			console.error('Unknown error:', error);
 			res.status(500).json('An unknown error occurred.');
 		}
 	}
@@ -76,20 +76,18 @@ export const refreshToken = (req: Request, res: Response, next: NextFunction) =>
 
 export const generateNewAccessToken = async (req: Request, res: Response, next: NextFunction) => {
 	try {
-		const accessToken = await token.generateAccessToken({_id: req.userId});
-
+		const accessToken = await token.generateAccessToken({_id: req.userId}, 1);
+		console.log('new token');
 		res.cookie('authToken', accessToken, {
 			secure: !(process.env.NODE_ENV === 'dev'), // Solo se envía a través de conexiones HTTPS
 			httpOnly: true, // No es accesible desde JavaScript en el navegador
 			sameSite: 'none',
-		})
-			.json({accessToken});
+		});
 	} catch (error) {
 		if (error instanceof Error) {
-			console.error('Error whit token:', error.message);
 			res.status(401).json(error.message);
 		} else {
-			console.error('Unknown error:', error);
+			console.error(error);
 			res.status(500).json('An unknown error occurred.');
 		}
 	}

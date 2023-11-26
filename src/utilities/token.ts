@@ -8,11 +8,13 @@ class Jwtoken {
 	private readonly accessKey: string;
 	private readonly refreshKey: string;
 	private readonly resetKey: string;
+	private readonly verifyEmailkey: string;
 
 	constructor() {
 		this.accessKey = process.env.TOKEN_SECRET ?? 'TOKEN_SECRET';
 		this.refreshKey = process.env.REFRESH_TOKEN_SECRET ?? 'REFRESH_TOKEN_SECRET';
 		this.resetKey = process.env.TOKEN_SECRET_RESET ?? 'TOKEN_SECRET_RESET';
+		this.verifyEmailkey = process.env.TOKEN_VERIFY_EMAIL_SECRET ?? 'TOKEN_VERIFY_EMAIL_SECRET';
 	}
 
 	public async generateAccessToken(payload: Ipayload, expTime?: string | number): Promise<string> {
@@ -25,6 +27,10 @@ class Jwtoken {
 
 	public async generateResetPasswordToken(payload: Ipayload, expTime?: string | number): Promise<string> {
 		return this.generate(payload, this.resetKey, expTime ?? 60 * 60);
+	}
+
+	public async generateVerifyEmailToken(payload: Ipayload, expTime?: string | number): Promise<string> {
+		return this.generate(payload, this.verifyEmailkey, expTime ?? 60 * 60 * 24);
 	}
 
 	private async generate(payload: JwtPayload, key: string, expiresIn: string | number | undefined): Promise<string> {

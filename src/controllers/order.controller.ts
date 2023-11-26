@@ -65,7 +65,7 @@ export const getOrderById = async (req: Request, res: Response) => {
 	try {
 		const order = await orderFacade.getOrderById(req.params.orderId);
 		// TODO add admin role permissions
-		if (String(order.userId) !== req.userId && String(order.sellerId) !== req.userId) throw new Error('unauthorized access to order');
+		if (!await orderFacade.verifyBuyer(req.params.orderId, req.userId)) throw new Error('unauthorized access to order');
 		res.json(order);
 	} catch (error) {
 		if (error instanceof Error) {
@@ -99,6 +99,22 @@ export const getOrders = async (req: Request, res: Response) => {
 			res.status(400).json(error.message);
 		} else {
 			res.status(500).json('Unknown error trying to obtain an order');
+		}
+	}
+};
+
+export const createMeeting = async (req: Request, res: Response) => {
+	try {
+		const {place, dateMeeting} = req.body as {place: number; dateMeeting: Date};
+		const {orderId} = req.params;
+		const {userId} = req;
+		const newOrder = await orderFacade.createMeeting(orderId, place, dateMeeting, userId);
+		res.status(200).json(newOrder);
+	} catch (error) {
+		if (error instanceof Error) {
+			res.status(400).json(error.message);
+		} else {
+			res.status(500).json('Unknown error trying to create a meeting');
 		}
 	}
 };

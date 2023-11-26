@@ -1,8 +1,9 @@
 import mongoose, {Types, type ObjectId, Mongoose} from 'mongoose';
-import Order, {type IOrder} from '../models/Order';
+import Order, {PlaceOptions, type IOrder} from '../models/Order';
 import {type FilterQuery} from 'mongoose';
 import productFacade from './product.facade';
 import task from '../utilities/task';
+import user from 'validators/user';
 // Export type IOrderFilters = {
 // 	userId?: Types.ObjectId;
 // 	sellerId?: Types.ObjectId;
@@ -87,6 +88,24 @@ class OrderFacade {
 		}
 	}
 
+	async createMeeting(orderId: string, place: number, dateMeeting: Date, userId: string) {
+		try {
+			const newData: Partial<IOrder> = {
+				place: PlaceOptions[place],
+				dateMeeting,
+			};
+			if (!await this.verifyBuyer(orderId, userId)) throw new Error('Inaccessible order');
+			const order = await Order.findByIdAndUpdate(orderId, newData, {new: true});
+			return order;
+		} catch (error) {
+			if (error instanceof Error) {
+				throw error;
+			} else {
+				throw new Error('Error creating a meeting');
+			}
+		}
+	}
+
 	async returnStock(order: IOrder) {
 		const products = order.products.flatMap(async p => productFacade.addStock(p.productId, p.quantity));
 		await Promise.all(products);
@@ -103,7 +122,7 @@ class OrderFacade {
 
 	async getFilteredOrders(userId: ObjectId | string, userType: string, filters: InterfaceOrderFilters = {}) {
 		try {
-			let query: FilterQuery<IOrder> = {};
+			const query: FilterQuery<IOrder> = {};
 
 			if (userType === 'seller') {
 				query.sellerId = (typeof (userId) === 'string') ? new Types.ObjectId(userId) : userId;
@@ -211,6 +230,15 @@ class OrderFacade {
 			return products;
 		} catch (error) {
 			throw new Error('Error al obtener los productos de la orden');
+		}
+	}
+
+	public async verifyBuyer(orderId: string, userId: string) {
+		try {
+			const order = await this.getOrderById(orderId);
+			return String(order.userId) === userId;
+		} catch (error) {
+			throw new Error('Unkown error to verifyBuyer');
 		}
 	}
 }

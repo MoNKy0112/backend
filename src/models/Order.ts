@@ -1,5 +1,7 @@
 import {Schema, Types, model, type Document, type ObjectId} from 'mongoose';
 import {type Url} from 'url';
+export const PlaceOptions = ['Ingenieria', 'Medicina', 'PlazaChe'] as const;
+export type PlaceOptionsType = typeof PlaceOptions[number];
 
 export type IOrder = {
 	userId: ObjectId | string;
@@ -15,6 +17,8 @@ export type IOrder = {
 	status: string;
 	date: Date;
 	preferenceId: string;
+	place?: PlaceOptionsType;
+	dateMeeting?: Date;
 	expireDate?: Date;
 };
 
@@ -64,6 +68,14 @@ const orderSchema = new Schema({
 		type: String,
 		required: false,
 		unique: true,
+	},
+	place: {
+		type: String,
+		required: false,
+	},
+	dateMeeting: {
+		type: Date,
+		required: false,
 	},
 	expireDate: {
 		type: Schema.Types.Date,

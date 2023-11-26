@@ -26,8 +26,8 @@ export type IUser = {
 	createdat: Date;
 	updatedat: Date;
 	imageUrl: string;
-	favouriteCategories: ObjectId[] | string[];
-	favouriteProducts: ObjectId[] | string[];
+	favoriteCategories: ObjectId[] | string[];
+	favoriteProducts: ObjectId[] | string[];
 	cart: Cart[];
 	accessTokenMp: string;
 	refreshTokenMp: string;
@@ -78,7 +78,7 @@ const userSchema = new Schema({
 		type: Schema.Types.ObjectId,
 		ref: 'Category',
 	}],
-	favouriteProducts: [{
+	favoriteProducts: [{
 		type: Schema.Types.ObjectId,
 		ref: 'Product',
 	}],

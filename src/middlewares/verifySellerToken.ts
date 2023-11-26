@@ -1,5 +1,5 @@
 import {type Request, type Response, type NextFunction} from 'express';
-import authFacade from 'facades/auth.facade';
+import authFacade from '../facades/auth.facade';
 
 export const verifyTokenMp = async (req: Request, res: Response, next: NextFunction) => {
 	try {

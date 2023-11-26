@@ -107,7 +107,9 @@ export const updateOrder = async (req: Request, res: Response) => {
 	try {
 		const orderData: Partial<IOrder> = {
 			products: req.body.verifiedProducts as Array<{
-				productId: Schema.Types.ObjectId | string;
+				productId: ObjectId | string;
+				productName: string;
+				productImageUrl: string;
 				quantity: number;
 				subtotal: number;
 			}>,

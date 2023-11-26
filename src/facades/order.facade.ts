@@ -106,7 +106,7 @@ class OrderFacade {
 			let query: FilterQuery<IOrder> = {};
 
 			if (userType === 'seller') {
-				query = {sellerId: userId};
+				query.sellerId = (typeof (userId) === 'string') ? new Types.ObjectId(userId) : userId;
 			} else if (userType === 'buyer') {
 				query.userId = (typeof (userId) === 'string') ? new Types.ObjectId(userId) : userId;
 			} else {
@@ -157,8 +157,7 @@ class OrderFacade {
 				},
 				{
 					$project: {
-						userId: 1,
-						_id: 1,
+						sellerId: 1,
 						date: 1,
 						status: 1,
 						products: 1,
@@ -170,12 +169,9 @@ class OrderFacade {
 
 			// Ejecutar la consulta de agregación con el pipeline construido.
 			const cursor = Order.aggregate(pipeline);
-			const orders = await cursor.exec();
-			// For (const order of orders) {
-			// 	console.log(order.userId);
-			// }
+			const orders: IOrder[] = await cursor.exec() as IOrder[];
 
-			return {orders};
+			return orders;
 		} catch (error) {
 			if (error instanceof Error) {
 				throw error;

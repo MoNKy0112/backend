@@ -10,6 +10,9 @@ import {type OAuthResponse} from 'mercadopago/dist/clients/oAuth/commonTypes';
 import config from '../config';
 import {v4 as uuidv4} from 'uuid';
 import orderFacade from './order.facade';
+import {verifyCartProducts} from 'middlewares/verifyCartProducts';
+import productFacade from './product.facade';
+import {type IProduct} from 'models/Product';
 const tiunAT = 'TEST-4999751880735799-102715-68f114798c57ff6fa5a0c75d88244183-1525915431';
 const clientAT = 'TEST-4999751880735799-102722-f86edf9771511613a2956599d623f117-1527430192';
 const tiunClient: MercadoPagoConfig = new MercadoPagoConfig({accessToken: tiunAT});
@@ -19,12 +22,15 @@ class Mercadopago {
 	public async updateOrder(paymentId: string, preferenceId: string, merchantOrderId: string) {
 		try {
 			const order = await OrderFacade.getOrderByPreferenceId(preferenceId);
+
 			const sellerId = order.sellerId as string;
-			console.log('algo');
 			const data = await this.getData(sellerId, paymentId, preferenceId, merchantOrderId);
 			const statusOrder = data.paymentData.status!;
-			console.log(statusOrder);
-			if (statusOrder === 'rejected') await orderFacade.returnStock(order);
+			if (order.status === '_' || order.status === 'pending') {
+				// Console.log(statusOrder);
+				if (statusOrder === 'rejected') await orderFacade.returnStock(order);
+			}
+
 			const newOrder = await OrderFacade.updateOrderByPreferenceId(preferenceId, statusOrder);
 			return newOrder;
 		} catch (error) {
@@ -42,9 +48,10 @@ class Mercadopago {
 			const sellerAT = (await userFacade.getUserById(order.sellerId)).accessTokenMp;
 			// If (!sellerAT) throw new Error('usuario sin acccess token mp');
 			const client: MercadoPagoConfig = new MercadoPagoConfig({accessToken: clientAT});
-			console.log(client);
+			// Console.log(client);
 			const preference = new Preference(client);
 			// If ((await orderFacade.getOrderById(orderId)).preferenceId !== '') throw new Error('This order already has a preference');
+			if (!await this.verifyProducts(orderId)) throw new Error('Algunos productos de la orden ya no existen');
 			const items = await this.ordertoPay(orderId);
 			const preferenceData = {body: {
 				items,
@@ -97,15 +104,6 @@ class Mercadopago {
 				} catch (error) {
 					if (error instanceof Error) {
 						console.error('error', error);
-						// TODO updateorder borrando el producto que no esta
-						if (error.message === 'Error trying to get a product for your ID') {
-							const newData: Partial<IOrder> = {
-								products: order.products.filter(prod => prod.productId !== product.productId),
-							};
-							await orderFacade.updateOrder(orderId, newData);
-							return this.ordertoPay(orderId);
-						}
-
 						throw error;
 					}
 				}
@@ -178,6 +176,30 @@ class Mercadopago {
 				throw new Error('Unknown error when trying to obtain the data');
 			}
 		}
+	}
+
+	private async verifyProducts(orderId: ObjectId | string): Promise<boolean> {
+		const order = await OrderFacade.getOrderById(orderId);
+		const inexistentProducts: string[] = [];
+		for (const product of order.products) {
+			try {
+				await productFacade.getProductById(product.productId);
+			} catch (error) {
+				if (error instanceof Error) {
+					if (error.message === 'Error trying to get a product for your ID') {
+						inexistentProducts.push(product.productId as string);
+					}
+				}
+			}
+		}
+
+		if (inexistentProducts.length === 0) return true;
+
+		const newData: Partial<IOrder> = {
+			products: order.products.filter(prod => !inexistentProducts.includes(prod.productId as string)),
+		};
+		await orderFacade.updateOrder(orderId, newData);
+		return false;
 	}
 }
 

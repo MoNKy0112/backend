@@ -25,8 +25,6 @@ export const getPreference = async (req: Request, res: Response) => {
 		};
 
 		const newOrder = await MercadopagoFacade.updateOrder(ids.paymentId, ids.preferenceId, ids.merchantOrderId);
-		console.log('algof');
-		// Actualizar order status en bd
 
 		res.status(200).json({newOrder});
 	} catch (error) {

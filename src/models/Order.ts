@@ -1,10 +1,13 @@
 import {Schema, Types, model, type Document, type ObjectId} from 'mongoose';
+import {type Url} from 'url';
 
 export type IOrder = {
 	userId: ObjectId | string;
 	sellerId: ObjectId | string;
 	products: Array<{
 		productId: ObjectId | string;
+		productName: string;
+		productImageUrl: string;
 		quantity: number;
 		subtotal: number;
 	}>;
@@ -37,6 +40,8 @@ const orderSchema = new Schema({
 	products: [
 		{
 			productId: {type: Types.ObjectId, ref: 'Product', required: true},
+			productName: {type: String, required: true},
+			productImageUrl: {type: String, required: true},
 			quantity: {type: Number, required: true},
 			subtotal: {type: Number, required: true},
 		},

@@ -54,6 +54,26 @@ export const tokenResetValidation = (req: Request, res: Response, next: NextFunc
 	}
 };
 
+export const tokenUserVerifyValidation = (req: Request, res: Response, next: NextFunction) => {
+	try {
+		const token = req.query.verifyemailtoken as string;
+
+		if (!token) throw new Error('token user verify not found');
+
+		const payload = jwt.verify(token, process.env.TOKEN_VERIFY_EMAIL_SECRET ?? 'TOKEN_VERIFY_EMAIL_SECRET') as IPayload;
+
+		req.userId = payload._id;
+
+		next();
+	} catch (error) {
+		if (error instanceof Error) {
+			res.status(401).json(error.message);
+		} else {
+			res.status(500).json('An unknown error occurred.');
+		}
+	}
+};
+
 export const refreshToken = async (req: Request, res: Response, next: NextFunction) => {
 	const token = req.cookies.refreshToken as string;
 	if (!token) throw new Error('Tokens do not exist');

@@ -3,7 +3,9 @@ import nodemailer from 'nodemailer';
 import handlebars from 'nodemailer-express-handlebars';
 import config from '../config';
 import path from 'path';
-
+import {type IUser} from '../models/User';
+import token from './token';
+import {type ObjectId} from 'mongoose';
 export type EmailTemplateData = {
 	nombre: string;
 	url?: string;
@@ -45,4 +47,14 @@ export default async function sendMail(email: string, subject: string, template:
 			console.log('Correo enviado:', info.response);
 		}
 	});
+}
+
+export async function emailVerification(user: IUser) {
+	const verifyEmailToken = await token.generateVerifyEmailToken({_id: user._id as ObjectId});
+	const verificationLink = `${config.FRONT_URL ?? `http://localhost:${process.env.PORT ?? '8080'}`}/verify_email?verifyemailtoken=${verifyEmailToken}`;
+	const data: EmailTemplateData = {
+		nombre: user.name,
+		url: verificationLink,
+	};
+	await sendMail(user.email, 'Verify your email', 'verifyEmail', data);
 }

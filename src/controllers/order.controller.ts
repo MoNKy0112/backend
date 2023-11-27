@@ -30,7 +30,7 @@ export const createNewOrder = async (req: Request, res: Response) => {
 				userId: user._id as string,
 				sellerId,
 				products,
-				status: '_',
+				status: 'pending',
 				date: new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000)),
 				totalAmount: total,
 				preferenceId: '',

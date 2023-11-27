@@ -1,5 +1,5 @@
 import {type Request, type Response} from 'express';
-import sendMail, {type EmailTemplateData} from '../utilities/sendmail';
+import sendMail, {emailVerification, type EmailTemplateData} from '../utilities/sendmail';
 import User, {type IUser} from '../models/User';
 import authFacade from '../facades/auth.facade';
 import {hash} from '../utilities/hash';
@@ -30,13 +30,7 @@ export const signUp = async (req: Request, res: Response) => {
 		// TODO verificar el usuario enviandole un correo el cual tenga que verificar
 		const accessToken = await token.generateAccessToken({_id: user._id as ObjectId});
 		const refreshToken = await token.generateRefreshToken({_id: user._id as ObjectId});
-		const verifyEmailToken = await token.generateVerifyEmailToken({_id: user._id as ObjectId});
-		const verificationLink = `${config.FRONT_URL ?? `http://localhost:${process.env.PORT ?? '8080'}`}/verify_email?verifyemailtoken=${verifyEmailToken}`;
-		const data: EmailTemplateData = {
-			nombre: user.name,
-			url: verificationLink,
-		};
-		await sendMail(user.email, 'Verify your email', 'verifyEmail', data);
+		await emailVerification(user);
 		res.cookie('authToken', accessToken, {
 			secure: !(process.env.NODE_ENV === 'dev'), // Solo se envía a través de conexiones HTTPS
 			httpOnly: true, // No es accesible desde JavaScript en el navegador
@@ -57,10 +51,25 @@ export const signUp = async (req: Request, res: Response) => {
 	}
 };
 
+export const sendVerifyEmail = async (req: Request, res: Response) => {
+	try {
+		const {userId} = req;
+		const user = await authFacade.getuser(userId);
+		await emailVerification(user);
+		res.status(200).json(`correo electronico enviado a ${user.email}`);
+	} catch (error) {
+		if (error instanceof Error) {
+			res.status(400).json(error);
+		} else {
+			res.status(500).json(error);
+		}
+	}
+};
+
 export const verifyEmail = async (req: Request, res: Response) => {
 	try {
 		const {userId} = req;
-		const user = authFacade.verifyEmail(userId);
+		const user = await authFacade.verifyEmail(userId);
 		res.status(200).json(user);
 	} catch (error) {
 		if (error instanceof Error) {

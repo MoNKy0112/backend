@@ -26,7 +26,7 @@ class Mercadopago {
 			const sellerId = order.sellerId as string;
 			const data = await this.getData(sellerId, paymentId, preferenceId, merchantOrderId);
 			const statusOrder = data.paymentData.status!;
-			if (order.status === '_' || order.status === 'pending') {
+			if (order.status === 'pending') {
 				// Console.log(statusOrder);
 				if (statusOrder === 'rejected') await orderFacade.returnStock(order);
 			}
@@ -50,14 +50,14 @@ class Mercadopago {
 			const client: MercadoPagoConfig = new MercadoPagoConfig({accessToken: clientAT});
 			// Console.log(client);
 			const preference = new Preference(client);
-			// If ((await orderFacade.getOrderById(orderId)).preferenceId !== '') throw new Error('This order already has a preference');
+			if ((await orderFacade.getOrderById(orderId)).preferenceId !== '_') throw new Error('This order already has a preference');
 			if (!await this.verifyProducts(orderId)) throw new Error('Algunos productos de la orden ya no existen');
 			const items = await this.ordertoPay(orderId);
 			const preferenceData = {body: {
 				items,
 				back_urls: {
-					success: 'http://localhost:3000/feedback',
-					failure: 'http://localhost:3000/feedback',
+					success: 'http://localhost:3000/payment-status-true',
+					failure: 'http://localhost:3000/payment-status-false',
 					pending: 'http://localhost:3000/feedback',
 				},
 				auto_return: 'approved',

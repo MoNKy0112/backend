@@ -9,10 +9,14 @@ export const create_preference = async (req: Request, res: Response) => {
 	try {
 		const orderId = req.body.orderId as string;
 		const pref = await MercadopagoFacade.createPreference(orderId);
-		res.status(200).json(pref.id);
+		res.status(200).json(pref);
 	} catch (error) {
-		console.error('error #', error);
-		res.status(500).json(error);
+		if (error instanceof Error) {
+			res.status(400).json(error.message);
+		} else {
+			console.error(error);
+			res.status(500).json(error);
+		}
 	}
 };
 

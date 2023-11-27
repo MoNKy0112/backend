@@ -50,7 +50,12 @@ class Mercadopago {
 			const client: MercadoPagoConfig = new MercadoPagoConfig({accessToken: clientAT});
 			// Console.log(client);
 			const preference = new Preference(client);
-			if ((await orderFacade.getOrderById(orderId)).preferenceId !== '_') throw new Error('This order already has a preference');
+			if (order.preferenceId !== '') {
+				if (order.status !== 'pending') throw new Error('This order already has a preference');
+
+				return order.preferenceId;
+			}
+
 			if (!await this.verifyProducts(orderId)) throw new Error('Algunos productos de la orden ya no existen');
 			const items = await this.ordertoPay(orderId);
 			const preferenceData = {body: {
@@ -73,7 +78,7 @@ class Mercadopago {
 			};
 			console.log('pref:::', pref.id);
 			await OrderFacade.updateOrder(orderId, newData);
-			return pref;
+			return pref.id;
 		} catch (error) {
 			if (error instanceof Error) {
 				throw error;

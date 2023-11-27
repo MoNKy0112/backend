@@ -39,31 +39,31 @@ class ValidateProduct {
 
 	public validateUpdate = [
 		body('name')
-			.optional()
+			.optional({checkFalsy: true})
 			.notEmpty()
 			.isString(),
 		body('description')
-			.optional()
+			.optional({checkFalsy: true})
 			.notEmpty()
 			.isString(),
 		body('price')
-			.optional()
+			.optional({checkFalsy: true})
 			.notEmpty()
 			.isNumeric(),
 		body('imageUrl')
-			.optional()
+			.optional({checkFalsy: true})
 			.notEmpty()
 			.isURL(),
 		body('categories')
-			.optional()
+			.optional({checkFalsy: true})
 			.notEmpty()
 			.isArray(),
 		body('stock')
-			.optional()
+			.optional({checkFalsy: true})
 			.notEmpty()
 			.isInt(),
 		body('discount')
-			.optional()
+			.optional({checkFalsy: true})
 			.notEmpty()
 			.isInt(),
 		(req: Request, res: Response, next: NextFunction) => {
@@ -73,22 +73,22 @@ class ValidateProduct {
 
 	public validateFilter = [
 		query('seller_id')
-			.optional()
+			.optional({checkFalsy: true})
 			.isMongoId(),
 		query('name')
-			.optional()
+			.optional({checkFalsy: true})
 			.isString(),
 		query('priceMin')
-			.optional()
+			.optional({checkFalsy: true})
 			.isNumeric(),
 		query('priceMax')
-			.optional()
+			.optional({checkFalsy: true})
 			.isNumeric(),
 		query('categories')
-			.optional()
+			.optional({checkFalsy: true})
 			.isArray(),
 		query('discountMin')
-			.optional()
+			.optional({checkFalsy: true})
 			.isInt({min: 0, max: 100}),
 		(req: Request, res: Response, next: NextFunction) => {
 			validateResult(req, res, next);

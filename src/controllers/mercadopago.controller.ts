@@ -44,7 +44,7 @@ export const linkSeller = async (req: Request, res: Response) => {
 	try {
 		const code = req.body.code as string;
 		const {userId} = req;
-		console.log(req.userId);
+		console.log('aaa', req.userId);
 		const data = await MercadopagoFacade.oauth(code);
 
 		const userData: Partial<IUser> = {

@@ -25,5 +25,5 @@ router.get('/newtoken', generateNewAccessToken);
 
 router.get('/verifyemail', tokenValidation, sendVerifyEmail);
 
-router.get('/verify', tokenUserVerifyValidation, verifyEmail);
+router.post('/verify', tokenUserVerifyValidation, verifyEmail);
 export default router;

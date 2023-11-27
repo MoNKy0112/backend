@@ -9,7 +9,7 @@ router.post('/signup', validate.validateSignUp, signUp);
 
 router.post('/signin', validate.validateSignIn, signIn);
 
-router.use('/profile', tokenValidation, userVerified);
+router.use('/profile', tokenValidation);
 
 router.get('/profile', profile);
 

@@ -37,10 +37,6 @@ class ValidateAuth {
 			.notEmpty()
 			.isMobilePhone('es-CO')
 			.withMessage('El número de teléfono no es válido en Colombia'),
-		body('termsandconditions')
-			.exists()
-			.isBoolean()
-			.notEmpty(),
 		(req: Request, res: Response, next: NextFunction) => {
 			validateResult(req, res, next);
 		},

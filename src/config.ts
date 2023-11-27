@@ -13,5 +13,5 @@ export default {
 	FRONT_URL: 'https://ti-un-front-vr3s.vercel.app',
 	TIUN_CLIENT_ID: '4999751880735799',
 	TIUN_CLIENT_SECRET: 'omjcA6FaAhtTlZrAjAEKZbBzI5jcLy0d',
-	REDIRECT_URI: 'https://backend-y8aq.vercel.app/oauthmp',
+	REDIRECT_URI: 'https://ti-un-front-vr3s.vercel.app/accountSucces',
 };

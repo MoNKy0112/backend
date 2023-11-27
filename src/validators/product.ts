@@ -20,10 +20,6 @@ class ValidateProduct {
 			.exists()
 			.notEmpty()
 			.isURL(),
-		body('categories')
-			.exists()
-			.notEmpty()
-			.isArray(),
 		body('stock')
 			.exists()
 			.notEmpty()

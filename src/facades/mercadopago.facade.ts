@@ -61,9 +61,9 @@ class Mercadopago {
 			const preferenceData = {body: {
 				items,
 				back_urls: {
-					success: 'http://localhost:3000/payment-status-true',
-					failure: 'http://localhost:3000/payment-status-false',
-					pending: 'http://localhost:3000/feedback',
+					success: `${config.FRONT_URL ?? `http://localhost:${process.env.PORT ?? '8080'}`}/payment-status-true`,
+					failure: `${config.FRONT_URL ?? `http://localhost:${process.env.PORT ?? '8080'}`}/payment-status-false`,
+					pending: `${config.FRONT_URL ?? `http://localhost:${process.env.PORT ?? '8080'}`}/feedback`,
 				},
 				auto_return: 'approved',
 				marketplace_fee: order.totalAmount * 0.05,

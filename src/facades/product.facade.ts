@@ -137,7 +137,7 @@ class ProductFacade {
 
 	async deleteProduct(productId: string) {
 		try {
-			const deletedProduct = await ProductModel.findByIdAndDelete(productId);
+			const deletedProduct = await ProductModel.findOneAndDelete({productId});
 			if (!deletedProduct) throw new Error('Error trying to eliminate product');
 			return deletedProduct;
 		} catch (error) {

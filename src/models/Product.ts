@@ -1,4 +1,5 @@
-import {Schema, model} from 'mongoose';
+import {Schema, model, type Document} from 'mongoose';
+import User from './User';
 
 export type IProduct = {
 	sellerId: Schema.Types.ObjectId | string;
@@ -19,7 +20,6 @@ const productSchema = new Schema({
 		type: Schema.Types.ObjectId,
 		ref: 'User',
 		required: true,
-
 	},
 	name: {
 		type: String,
@@ -74,3 +74,30 @@ const productSchema = new Schema({
 });
 
 export default model<IProduct & Document>('Product', productSchema);
+
+productSchema.pre<IProduct & Document>('findOneAndDelete', async function (this: IProduct & Document, next) {
+	try {
+		// Elimié esta línea ya que no estaba completa y no es necesaria para el hook pre-remove
+		// const usuarios = await User.find({ favoriteProducts: this. });
+
+		// El hook pre-remove debe actuar solo en la instancia actual del producto
+		const usuarios = await User.find({favoriteProducts: this._id as string});
+
+		await Promise.all(
+			usuarios.map(async usuario => {
+				// Filtrar y asignar el nuevo array de strings
+				usuario.favoriteProducts = usuario.favoriteProducts.filter(
+					productId => String(productId) !== String(this._id),
+				) as string[];
+
+				await usuario.save();
+			}),
+		);
+
+		next();
+	} catch (error) {
+		// Maneja el error de manera apropiada, por ejemplo, registrándolo o lanzándolo nuevamente
+		console.error(error);
+		next();
+	}
+});

@@ -3,8 +3,18 @@ import ProductFacade, {type InterfaceProductFilters} from '../facades/product.fa
 import moment from 'moment-timezone';
 import {type IProduct} from 'models/Product';
 import {Date, type UpdateQuery} from 'mongoose';
+import User from '../models/User';
 
 moment.tz.setDefault('America/Bogota');
+
+export const test = async (req: Request, res: Response) => {
+	try {
+		const a = await User.find({favoriteProducts: {$in: [req.body.id as string]}});
+		res.json(a);
+	} catch (error) {
+		res.json(error);
+	}
+};
 
 export const createProduct = async (req: Request, res: Response) => {
 	try {

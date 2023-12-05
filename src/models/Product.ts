@@ -73,21 +73,20 @@ const productSchema = new Schema({
 	},
 });
 
-export default model<IProduct & Document>('Product', productSchema);
-
-productSchema.pre<IProduct & Document>('findOneAndDelete', async function (this: IProduct & Document, next) {
+productSchema.pre('findOneAndDelete', async function (next) {
 	try {
 		// Elimié esta línea ya que no estaba completa y no es necesaria para el hook pre-remove
 		// const usuarios = await User.find({ favoriteProducts: this. });
 
 		// El hook pre-remove debe actuar solo en la instancia actual del producto
-		const usuarios = await User.find({favoriteProducts: this._id as string});
-
+		const id = this.getQuery()._id as string;
+		const usuarios = await User.find({favoriteProducts: {$in: [id]}});
+		console.log(usuarios);
 		await Promise.all(
 			usuarios.map(async usuario => {
 				// Filtrar y asignar el nuevo array de strings
 				usuario.favoriteProducts = usuario.favoriteProducts.filter(
-					productId => String(productId) !== String(this._id),
+					productId => String(productId) !== String(id),
 				) as string[];
 
 				await usuario.save();
@@ -101,3 +100,6 @@ productSchema.pre<IProduct & Document>('findOneAndDelete', async function (this:
 		next();
 	}
 });
+
+export default model<IProduct & Document>('Product', productSchema);
+

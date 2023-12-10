@@ -81,7 +81,6 @@ productSchema.pre('findOneAndDelete', async function (next) {
 		// El hook pre-remove debe actuar solo en la instancia actual del producto
 		const id = this.getQuery()._id as string;
 		const usuarios = await User.find({favoriteProducts: {$in: [id]}});
-		console.log(usuarios);
 		await Promise.all(
 			usuarios.map(async usuario => {
 				// Filtrar y asignar el nuevo array de strings
